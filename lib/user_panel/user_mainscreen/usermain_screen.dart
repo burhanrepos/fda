@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:fda/global/global.dart';
-import 'package:fda/mainScreens/orderNow.dart';
+import 'package:fda/user_panel/user/orderNow.dart';
 import 'package:fda/widgets/divider.dart';
 import 'package:fda/widgets/mydrawer.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +11,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 //import 'package:fda/user/login.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import '../assistants/assistant_methods.dart';
-import '../assistants/geofire_assistant.dart';
+import '../../assistants/assistant_methods.dart';
+import '../../assistants/geofire_assistant.dart';
 import 'package:fda/models/active_nearby_available_drivers.dart';
 //import '../mainScreens/searchScreen.dart';
 //import '../models/active_nearby_available_drivers.dart';

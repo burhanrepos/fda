@@ -1,13 +1,13 @@
 import 'package:fda/Widgets/progress_dialog.dart';
 import 'package:fda/infoHandler/app_info.dart';
-import 'package:fda/user_mainscreen/usermain_screen.dart';
+import 'package:fda/user_panel/user_mainscreen/usermain_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import '../global/global.dart';
+import '../../global/global.dart';
 
 
 class OrderNow extends StatefulWidget {

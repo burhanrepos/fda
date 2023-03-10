@@ -9,8 +9,7 @@ import 'dart:async';
 //import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../assistants/assistant_methods.dart';
-
+import '../../assistants/assistant_methods.dart';
 
 class HomeTabPage extends StatefulWidget {
   const HomeTabPage({Key? key}) : super(key: key);
@@ -18,6 +17,7 @@ class HomeTabPage extends StatefulWidget {
   @override
   State<HomeTabPage> createState() => _HomeTabPageState();
 }
+
 
 class _HomeTabPageState extends State<HomeTabPage> {
   GoogleMapController? newGoogleMapController;
@@ -30,15 +30,13 @@ class _HomeTabPageState extends State<HomeTabPage> {
   var geoLocator = Geolocator();
   LocationPermission? _locationPermission;
 
-  String statusText="Now Offline";
-  Color buttonColor =Colors.grey;
-  bool isDriverActive=false;
+  String statusText = "Now Offline";
+  Color buttonColor = Colors.grey;
+  bool isDriverActive = false;
 
-  StreamSubscription<Position>?streamSubscriptionPosition;
+  StreamSubscription<Position>? streamSubscriptionPosition;
 
-
-  blackThemeGoogleMap()
-  {
+  blackThemeGoogleMap() {
     newGoogleMapController!.setMapStyle('''
                     [
                       {
@@ -204,38 +202,46 @@ class _HomeTabPageState extends State<HomeTabPage> {
                 ''');
   }
 
-  checkIfLocationPermissionAllowed() async
-  {
+  checkIfLocationPermissionAllowed() async {
     _locationPermission = await Geolocator.requestPermission();
 
-    if(_locationPermission == LocationPermission.denied)
-    {
+    if (_locationPermission == LocationPermission.denied) {
       _locationPermission = await Geolocator.requestPermission();
     }
   }
 
-  locateDriverPosition() async
-  {
-    Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  showModelBottom() {
+    return Container(
+      child: Text('hello'),
+    );
+  }
+
+  locateDriverPosition() async {
+    Position cPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     driverCurrentPosition = cPosition;
 
-    LatLng latLngPosition = LatLng(driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
+    LatLng latLngPosition = LatLng(
+        driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
 
-    CameraPosition cameraPosition = CameraPosition(target: latLngPosition, zoom: 14);
+    CameraPosition cameraPosition =
+        CameraPosition(target: latLngPosition, zoom: 14);
 
-    newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    newGoogleMapController!
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
-    String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoOrdinates(driverCurrentPosition!, context);
+    String humanReadableAddress =
+        await AssistantMethods.searchAddressForGeographicCoOrdinates(
+            driverCurrentPosition!, context);
     print("this is your address = " + humanReadableAddress);
   }
+
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     checkIfLocationPermissionAllowed();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -245,24 +251,23 @@ class _HomeTabPageState extends State<HomeTabPage> {
           mapType: MapType.normal,
           myLocationEnabled: true,
           initialCameraPosition: _kGooglePlex,
-          onMapCreated: (GoogleMapController controller)
-          {
+          onMapCreated: (GoogleMapController controller) {
             _controllerGoogleMap.complete(controller);
             newGoogleMapController = controller;
             locateDriverPosition();
 
             //black theme google map
             blackThemeGoogleMap();
-
           },
         ),
-              statusText!="Now Online" ? Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              color: Colors.black87,
+        statusText != "Now Online"
+            ? Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                color: Colors.black87,
+              )
+            : Container(),
 
-                ):
-               Container(),
         Positioned(
           top: statusText != "Now Online"
               ? MediaQuery.of(context).size.height * 0.46
@@ -273,10 +278,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: ()
-                {
-                  if(isDriverActive != true) //offline
-                      {
+                onPressed: () {
+                  if (isDriverActive != true) //offline
+                  {
                     driverIsOnlineNow();
                     updateDriversLocation();
 
@@ -288,9 +292,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
                     //display Toast
                     Fluttertoast.showToast(msg: "you are Online Now");
-                  }
-                  else //online
-                      {
+                  } else //online
+                  {
                     driverIsOffline();
 
                     setState(() {
@@ -312,69 +315,240 @@ class _HomeTabPageState extends State<HomeTabPage> {
                 ),
                 child: statusText != "Now Online"
                     ? Text(
-                  statusText,
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                )
+                        statusText,
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      )
                     : const Icon(
-                  Icons.phonelink_ring,
-                  color: Colors.white,
-                  size: 26,
-                ),
+                        Icons.phonelink_ring,
+                        color: Colors.white,
+                        size: 26,
+                      ),
               ),
             ],
           ),
         ),
-         //button
+        statusText == "Now Online"
+            ? Positioned(
+                child: PopupContainer(),
+                bottom: 0,
+                left: 0,
+                right: 0,
+              )
+            : Container(),
+
+        //button
       ],
     );
-
   }
 
-
-  driverIsOnlineNow()async{
+  driverIsOnlineNow() async {
     Position pos = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
-    driverCurrentPosition=pos;
+    driverCurrentPosition = pos;
 
     Geofire.initialize("activeDrivers");
-    Geofire.setLocation(currentFirebaseUser!.uid, driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
+    Geofire.setLocation(currentFirebaseUser!.uid,
+        driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
 
-    DatabaseReference ref=FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideOrder");
+    DatabaseReference ref = FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(currentFirebaseUser!.uid)
+        .child("newRideOrder");
     ref.set("idle");
-    ref.onValue.listen((event) {
-
-    });
+    ref.onValue.listen((event) {});
   }
-  updateDriversLocation(){
-    streamSubscriptionPosition=Geolocator.getPositionStream().listen((Position position) {
-      driverCurrentPosition=position;
-      if(isDriverActive==true){
-        Geofire.setLocation(currentFirebaseUser!.uid, driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
 
+  updateDriversLocation() {
+    streamSubscriptionPosition =
+        Geolocator.getPositionStream().listen((Position position) {
+      driverCurrentPosition = position;
+      if (isDriverActive == true) {
+        Geofire.setLocation(currentFirebaseUser!.uid,
+            driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
       }
-      LatLng latLng=LatLng(driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
+      LatLng latLng = LatLng(
+          driverCurrentPosition!.latitude, driverCurrentPosition!.longitude);
       newGoogleMapController!.animateCamera(CameraUpdate.newLatLng(latLng));
-
     });
   }
-driverIsOffline(){
+
+  driverIsOffline() {
     Geofire.removeLocation(currentFirebaseUser!.uid);
-    DatabaseReference? ref=FirebaseDatabase.instance.ref().child("drivers").child(currentFirebaseUser!.uid).child("newRideOrder");
+    DatabaseReference? ref = FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(currentFirebaseUser!.uid)
+        .child("newRideOrder");
     ref.onDisconnect();
     ref.remove();
-    ref=null;
-    Future.delayed(const Duration(milliseconds: 2000), ()
-    {
+    ref = null;
+    Future.delayed(const Duration(milliseconds: 2000), () {
       //SystemChannels.platform.invokeMethod("SystemNavigator.pop");
       SystemNavigator.pop();
     });
-
+  }
 }
+
+
+
+class UserOrderRequest extends StatelessWidget {
+  const UserOrderRequest({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const usersRequest = [
+      {'username': 'Burhan', 'status': true},
+      {'username': 'Hamza', 'status': true},
+      {'username': 'Hamza', 'status': true},
+      {'username': 'Hamza', 'status': true},
+      {'username': 'Qasim', 'status': true}
+    ];
+
+    return Container(
+      alignment: Alignment.topCenter,
+      padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+      child: Expanded(
+          child: ListView.builder(
+              padding: const EdgeInsets.all(8),
+              itemCount: usersRequest.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                            radius: 30.0,
+                            backgroundColor: Colors.transparent,
+                            backgroundImage:
+                                AssetImage('images/profile_icon.png')
+                                    as ImageProvider),
+                        SizedBox(width: 10.0),
+                        Text(
+                          usersRequest[index]['username'].toString(),
+                          style: TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 10.0),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            // Accept action
+                            usersRequest[index]['status'] = true;
+                          },
+                          child: Text('Accept'),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.green,
+                          ),
+                        ),
+                        SizedBox(width: 10.0),
+                        ElevatedButton(
+                          onPressed: () {
+                            // Reject action
+                            usersRequest[index]['status'] = false;
+                          },
+                          child: Text('Reject'),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              })),
+      height: MediaQuery.of(context).size.height * 0.3,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+          color: Colors.white),
+    );
+  }
+}
+
+class PopupContainer extends StatefulWidget {
+  @override
+  _PopupContainerState createState() => _PopupContainerState();
+}
+
+class _PopupContainerState extends State<PopupContainer>
+    with SingleTickerProviderStateMixin {
+  AnimationController? _animationController;
+  Animation<double>? _animation;
+  bool _isOpened = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _animation = CurvedAnimation(
+        parent: _animationController!, curve: Curves.fastLinearToSlowEaseIn);
+  }
+
+  @override
+  void dispose() {
+    _animationController!.dispose();
+    super.dispose();
+  }
+
+  void _toggleContainer() {
+    setState(() {
+      _isOpened = !_isOpened;
+      if (_isOpened) {
+        _animationController!.forward();
+      } else {
+        _animationController!.reverse();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ElevatedButton(
+          onPressed: _toggleContainer,
+          style: ElevatedButton.styleFrom(
+            primary: Colors.green,
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(26),
+            ),
+          ),
+          child: Container(
+            width: 70,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text("Orders"),
+                Icon(_isOpened
+                    ? Icons.arrow_drop_down_sharp
+                    : Icons.arrow_drop_up_sharp),
+              ],
+            ),
+          ),
+        ),
+        SizeTransition(
+          sizeFactor: _animation!,
+          child: Visibility(visible: _isOpened, child: UserOrderRequest()),
+        ),
+      ],
+    );
+  }
 }
 
 

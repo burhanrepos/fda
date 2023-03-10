@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:fda/authentication/login_screen.dart';
-import 'package:fda/authentication/signup_screen.dart';
+import 'package:fda/rider_panel/authentication/login_screen.dart';
+import 'package:fda/rider_panel/authentication/signup_screen.dart';
 import 'package:fda/global/global.dart';
-import 'package:fda/mainScreens/main_screen.dart';
-import 'package:fda/user_mainscreen/usermain_screen.dart';
+import 'package:fda/rider_panel/mainScreens/main_screen.dart';
+import 'package:fda/user_panel/user_mainscreen/usermain_screen.dart';
 import 'package:flutter/material.dart';
 class MySplashScreen extends StatefulWidget {
   const MySplashScreen({Key? key}) : super(key: key);

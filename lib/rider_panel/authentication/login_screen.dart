@@ -1,13 +1,13 @@
-import 'package:fda/authentication/signup_screen.dart';
+import 'package:fda/rider_panel/authentication/signup_screen.dart';
 import 'package:fda/splashScreen/splash_screen.dart';
-import 'package:fda/user/login.dart';
+import 'package:fda/user_panel/user/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '../Widgets/progress_dialog.dart';
-import '../global/global.dart';
+import '../../Widgets/progress_dialog.dart';
+import '../../global/global.dart';
 class LoginScreen extends StatefulWidget {
 
   @override
