@@ -25,6 +25,23 @@ FocusNode searchFocusNode = FocusNode();
 FocusNode textFieldFocusNode = FocusNode();
 late SingleValueDropDownController _cnt;
 late SingleValueDropDownController _secondCnt;
+List dropDownValues = [
+    {
+        "fuel":"Petrol",
+        "price":250,
+        "color":Colors.red
+    },
+    {
+        "fuel":"Hi-Octane",
+        "price":350,
+        "color":Colors.green
+    },
+    {
+        "fuel":"Diesel",
+        "price":285,
+        "color":Colors.purpleAccent
+    }
+];
 
   User? get firebaseUser => currentFirebaseUser;
 //late MultiValueDropDownController _cntMulti;
@@ -32,10 +49,20 @@ late SingleValueDropDownController _secondCnt;
 SaveOrder(){
 
   if(firebaseUser !=null) {
+    int price=0;
+    for(int index=0;index<dropDownValues.length;index++){
+        if(_cnt.dropDownValue?.name.toString()==dropDownValues[index]['fuel']){
+            int numberOfLiters = int.parse((_secondCnt.dropDownValue?.name.toString().substring(0,1)).toString());
+            price = dropDownValues[index]['price'];
+            price=price*numberOfLiters;
+            print("Price =========${price}");
+        }
+    }
     Map userOrder={
       "id":currentFirebaseUser!.uid,
       "Fuel":_cnt.dropDownValue?.name.toString(),
       "Liter":_secondCnt.dropDownValue?.name.toString(),
+      "Price":price
     };
     DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
     driversRef.child(currentFirebaseUser!.uid).child("orderDetails").set(userOrder);
@@ -60,6 +87,7 @@ void initState() {
 @override
 void dispose() {
   _cnt.dispose();
+  _secondCnt.dispose();
   _secondCnt.dispose();
  // _cntMulti.dispose();
   super.dispose();
@@ -156,9 +184,50 @@ void dispose() {
                   ],
                   onChanged: (val) {},
                 ),
-                const SizedBox(
-                  height: 400,
+                 const SizedBox(
+                  height: 20,
                 ),
+                Container(
+        height: 100.0,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: dropDownValues.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              margin: EdgeInsets.symmetric(horizontal: 8.0),
+              width: 100.0,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    dropDownValues[index]['fuel'].toString(),
+                    style: TextStyle(fontSize: 18.0,fontWeight: FontWeight.bold,color: dropDownValues[index]['color'] ),
+                  ),
+                  Text(
+                    dropDownValues[index]['price'].toString(),
+                    style: TextStyle(fontSize: 24.0,fontWeight: FontWeight.bold,color: dropDownValues[index]['color']),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+                // const SizedBox(
+                //   height: 400,
+                // ),
             ],
           ),
         ),

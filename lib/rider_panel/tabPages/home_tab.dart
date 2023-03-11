@@ -27,7 +27,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(33.6844, 73.0479),
+    target: LatLng(33.7009, 73.1040),
     zoom: 14.0,
   );
   var geoLocator = Geolocator();
@@ -36,6 +36,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
   String statusText = "Now Offline";
   Color buttonColor = Colors.grey;
   bool isDriverActive = false;
+  LatLng _sourceLocation = LatLng(37.4219999, -122.0840575);
+  LatLng _destinationLocation = LatLng(37.42796133580664, -122.085749655962);
+
 
   StreamSubscription<Position>? streamSubscriptionPosition;
   User? get firebaseUser => currentFirebaseUser;
@@ -250,6 +253,15 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
   @override
   Widget build(BuildContext context) {
+    final Set<Polyline> _polyline = {};
+    _polyline.add(Polyline(
+      polylineId: PolylineId("route1"),
+      visible: true,
+      width: 10,
+      color: Colors.blueAccent,
+      endCap: Cap.buttCap,
+      points: [_sourceLocation, _destinationLocation],
+    ));
     return Stack(
       children: [
         GoogleMap(
@@ -264,6 +276,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
             //black theme google map
             blackThemeGoogleMap();
           },
+          
+          polylines: _polyline,
         ),
         statusText != "Now Online"
             ? Container(
@@ -442,25 +456,163 @@ class UserOrderRequest extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Name: ${userDetails['name'].toString()}'),
+                Container(
+          padding: EdgeInsets.all(5.0),
+          margin: EdgeInsets.all(2.5),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Text(
+            'Name: ${userDetails['name'].toString()}',
+            style: TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.italic,
+              color: Colors.green,
+              letterSpacing: 1.0,
+            ),
+          ),
+        ) ,
               SizedBox(height: 8.0),
-              Text('Email: ${userDetails['email'].toString()}'),
-              SizedBox(height: 8.0),
-              Text('Phone: ${userDetails['phone'].toString()}'),
+              Container(
+          padding: EdgeInsets.all(5.0),
+          margin: EdgeInsets.all(2.5),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Text(
+            'Phone: ${userDetails['phone'].toString()}',
+            style: TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.italic,
+              color: Colors.orangeAccent,
+              letterSpacing: 1.0,
+            ),
+          ),
+        ) ,
+            //   Text('Phone: ${userDetails['phone'].toString()}'),
               userDetails['orderDetails'] != null
                   ? SizedBox(height: 8.0)
                   : SizedBox(),
               userDetails['orderDetails'] != null
-                  ? Text(
-                      'Fuel: ${userDetails['orderDetails']['Fuel'].toString()}')
+                  ? 
+                 Container(
+          padding: EdgeInsets.all(5.0),
+          margin: EdgeInsets.all(2.5),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Text(
+            'Fuel: ${userDetails['orderDetails']['Fuel'].toString()}',
+            style: TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.italic,
+              color: Colors.redAccent,
+              letterSpacing: 1.0,
+            ),
+          ),
+        ) 
+                //   Text(
+                //       'Fuel: ${userDetails['orderDetails']['Fuel'].toString()}')
                   : SizedBox(),
               userDetails['orderDetails'] != null
                   ? SizedBox(height: 8.0)
                   : SizedBox(),
               userDetails['orderDetails'] != null
-                  ? Text(
-                      'Liter: ${userDetails['orderDetails']['Liter'].toString()}')
+                  ? Container(
+          padding: EdgeInsets.all(5.0),
+          margin: EdgeInsets.all(2.5),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Text(
+            "Liter: ${userDetails['orderDetails']['Liter'].toString()}",
+            style: TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.italic,
+              color: Colors.blue,
+              letterSpacing: 1.0,
+            ),
+          ),
+        )
+      
+    //   Text(
+    //                   'Liter: ${userDetails['orderDetails']['Liter'].toString()}')
                   : SizedBox(),
+            userDetails['orderDetails'] != null
+                ? SizedBox(height: 8.0)
+                : SizedBox(),
+            userDetails['orderDetails'] != null
+                ? 
+                Container(
+          padding: EdgeInsets.all(5.0),
+          margin: EdgeInsets.all(2.5),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Text(
+            'Price: ${userDetails['orderDetails']['Price'].toString()}',
+            style: TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.italic,
+              color: Colors.purpleAccent,
+              letterSpacing: 1.0,
+            ),
+          ),
+        )
+                // Text(
+                //     'Price: ${userDetails['orderDetails']['Price'].toString()}')
+                : SizedBox(),
+
             ],
           ),
           actions: [
@@ -533,7 +685,7 @@ class UserOrderRequest extends StatelessWidget {
                       onPressed: () {
                         displayUserDetails(context, usersRequest[index]);
                       },
-                      child: Text('Open Details'),
+                      child: Text('Order details'),
                       style: ElevatedButton.styleFrom(
                         primary: Colors.green,
                       ),
@@ -604,11 +756,16 @@ class _PopupContainerState extends State<PopupContainer>
             ),
           ),
           child: Container(
-            width: 70,
+            width: 100,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text("Orders"),
+                Row(
+                  children: [
+                    Text("Orders "),
+                    Text('(${HomeTabPage.allUser.length})',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 17),)
+                  ],
+                ),
                 Icon(_isOpened
                     ? Icons.arrow_drop_down_sharp
                     : Icons.arrow_drop_up_sharp),
