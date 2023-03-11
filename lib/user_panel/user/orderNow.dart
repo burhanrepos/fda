@@ -34,11 +34,11 @@ SaveOrder(){
   if(firebaseUser !=null) {
     Map userOrder={
       "id":currentFirebaseUser!.uid,
-      "Fuel":_cnt.dropDownValue.toString(),
-      "Liter":_secondCnt.dropDownValue.toString(),
+      "Fuel":_cnt.dropDownValue?.name.toString(),
+      "Liter":_secondCnt.dropDownValue?.name.toString(),
     };
     DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
-    driversRef.child(currentFirebaseUser!.uid).child("Order details").set(userOrder);
+    driversRef.child(currentFirebaseUser!.uid).child("orderDetails").set(userOrder);
     currentFirebaseUser = firebaseUser;
     Fluttertoast.showToast(msg: 'Your order has been sent to rider');
     Navigator.push(context,MaterialPageRoute(builder: (c)=>UserMainScreen()));

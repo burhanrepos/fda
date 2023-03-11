@@ -1,10 +1,13 @@
 import 'package:fda/global/global.dart';
+import 'package:fda/models/user_with_orders.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'dart:async';
 //import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -13,11 +16,11 @@ import '../../assistants/assistant_methods.dart';
 
 class HomeTabPage extends StatefulWidget {
   const HomeTabPage({Key? key}) : super(key: key);
+  static List allUser = [];
 
   @override
   State<HomeTabPage> createState() => _HomeTabPageState();
 }
-
 
 class _HomeTabPageState extends State<HomeTabPage> {
   GoogleMapController? newGoogleMapController;
@@ -35,6 +38,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   bool isDriverActive = false;
 
   StreamSubscription<Position>? streamSubscriptionPosition;
+  User? get firebaseUser => currentFirebaseUser;
 
   blackThemeGoogleMap() {
     newGoogleMapController!.setMapStyle('''
@@ -239,6 +243,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   @override
   void initState() {
     super.initState();
+    getAllOrders();
 
     checkIfLocationPermissionAllowed();
   }
@@ -345,6 +350,25 @@ class _HomeTabPageState extends State<HomeTabPage> {
     );
   }
 
+  getAllOrders() async {
+    if (firebaseUser != null) {
+      var usersDetails;
+      DatabaseReference userReference =
+          FirebaseDatabase.instance.ref().child("users");
+      // Get the data once
+      DatabaseEvent usersWithOrder = await userReference.once();
+      usersDetails = usersWithOrder.snapshot.value;
+      currentFirebaseUser = firebaseUser;
+      for (var category in usersDetails.keys) {
+        if (usersDetails[category]['orderDetails'] != null) {
+          HomeTabPage.allUser.add(usersDetails[category]);
+        }
+      }
+    } else {
+      Fluttertoast.showToast(msg: "Error while fetching data from firebase.");
+    }
+  }
+
   driverIsOnlineNow() async {
     Position pos = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
@@ -395,22 +419,84 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 }
 
-
-
 class UserOrderRequest extends StatelessWidget {
   const UserOrderRequest({
     super.key,
   });
 
+  displayUserDetails(context, userDetails) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          contentTextStyle: TextStyle(
+              color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500),
+          titleTextStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              fontFamily: "Montserrat"),
+          title: Text('Order Details'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Name: ${userDetails['name'].toString()}'),
+              SizedBox(height: 8.0),
+              Text('Email: ${userDetails['email'].toString()}'),
+              SizedBox(height: 8.0),
+              Text('Phone: ${userDetails['phone'].toString()}'),
+              userDetails['orderDetails'] != null
+                  ? SizedBox(height: 8.0)
+                  : SizedBox(),
+              userDetails['orderDetails'] != null
+                  ? Text(
+                      'Fuel: ${userDetails['orderDetails']['Fuel'].toString()}')
+                  : SizedBox(),
+              userDetails['orderDetails'] != null
+                  ? SizedBox(height: 8.0)
+                  : SizedBox(),
+              userDetails['orderDetails'] != null
+                  ? Text(
+                      'Liter: ${userDetails['orderDetails']['Liter'].toString()}')
+                  : SizedBox(),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green,
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(26),
+                  ),
+                ),
+                child: Text("Accept order")),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.redAccent,
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(26),
+                  ),
+                ),
+                child: Text("Cancel")),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    const usersRequest = [
-      {'username': 'Burhan', 'status': true},
-      {'username': 'Hamza', 'status': true},
-      {'username': 'Hamza', 'status': true},
-      {'username': 'Hamza', 'status': true},
-      {'username': 'Qasim', 'status': true}
-    ];
+    List usersRequest = HomeTabPage.allUser;
 
     return Container(
       alignment: Alignment.topCenter,
@@ -433,37 +519,24 @@ class UserOrderRequest extends StatelessWidget {
                                     as ImageProvider),
                         SizedBox(width: 10.0),
                         Text(
-                          usersRequest[index]['username'].toString(),
+                          usersRequest[index]['name'].toString(),
                           style: TextStyle(
-                              fontSize: 18.0, fontWeight: FontWeight.bold),
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
+                          //   softWrap: true,
                         ),
                         SizedBox(width: 10.0),
                       ],
                     ),
-                    Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            // Accept action
-                            usersRequest[index]['status'] = true;
-                          },
-                          child: Text('Accept'),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.green,
-                          ),
-                        ),
-                        SizedBox(width: 10.0),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Reject action
-                            usersRequest[index]['status'] = false;
-                          },
-                          child: Text('Reject'),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.red,
-                          ),
-                        ),
-                      ],
+                    ElevatedButton(
+                      onPressed: () {
+                        displayUserDetails(context, usersRequest[index]);
+                      },
+                      child: Text('Open Details'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.green,
+                      ),
                     ),
                   ],
                 );
@@ -501,6 +574,7 @@ class _PopupContainerState extends State<PopupContainer>
   @override
   void dispose() {
     _animationController!.dispose();
+    HomeTabPage.allUser.clear();
     super.dispose();
   }
 
@@ -550,5 +624,3 @@ class _PopupContainerState extends State<PopupContainer>
     );
   }
 }
-
-
