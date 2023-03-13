@@ -17,6 +17,11 @@ import '../../assistants/assistant_methods.dart';
 class HomeTabPage extends StatefulWidget {
   const HomeTabPage({Key? key}) : super(key: key);
   static List allUser = [];
+  static Set<Polyline> _polyline = {};
+  static Set<Marker> _markers = {};
+  static LatLng _sourceLocation = LatLng(37.4219999, -122.0840575);
+  static LatLng _destinationLocation = LatLng(37.42796133580664, -122.085749655962);
+   
 
   @override
   State<HomeTabPage> createState() => _HomeTabPageState();
@@ -32,12 +37,16 @@ class _HomeTabPageState extends State<HomeTabPage> {
   );
   var geoLocator = Geolocator();
   LocationPermission? _locationPermission;
+  static Key _mapKey = UniqueKey();
+    static void  _refreshMap(StateSetter state) {
+    state.call((){
+      _mapKey = UniqueKey();
+    });
+  }
 
   String statusText = "Now Offline";
   Color buttonColor = Colors.grey;
   bool isDriverActive = false;
-  LatLng _sourceLocation = LatLng(37.4219999, -122.0840575);
-  LatLng _destinationLocation = LatLng(37.42796133580664, -122.085749655962);
 
 
   StreamSubscription<Position>? streamSubscriptionPosition;
@@ -242,6 +251,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
             driverCurrentPosition!, context);
     print("this is your address = " + humanReadableAddress);
   }
+  void _updateState() {
+    setState(() { });
+  }
 
   @override
   void initState() {
@@ -253,18 +265,11 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Set<Polyline> _polyline = {};
-    _polyline.add(Polyline(
-      polylineId: PolylineId("route1"),
-      visible: true,
-      width: 10,
-      color: Colors.blueAccent,
-      endCap: Cap.buttCap,
-      points: [_sourceLocation, _destinationLocation],
-    ));
+    
     return Stack(
       children: [
         GoogleMap(
+            key: _mapKey,
           mapType: MapType.normal,
           myLocationEnabled: true,
           initialCameraPosition: _kGooglePlex,
@@ -272,12 +277,12 @@ class _HomeTabPageState extends State<HomeTabPage> {
             _controllerGoogleMap.complete(controller);
             newGoogleMapController = controller;
             locateDriverPosition();
-
             //black theme google map
             blackThemeGoogleMap();
           },
           
-          polylines: _polyline,
+          polylines: HomeTabPage._polyline,
+          markers: HomeTabPage._markers,
         ),
         statusText != "Now Online"
             ? Container(
@@ -352,7 +357,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
         ),
         statusText == "Now Online"
             ? Positioned(
-                child: PopupContainer(),
+                child: PopupContainer(myState:_updateState),
                 bottom: 0,
                 left: 0,
                 right: 0,
@@ -434,9 +439,14 @@ class _HomeTabPageState extends State<HomeTabPage> {
 }
 
 class UserOrderRequest extends StatelessWidget {
-  const UserOrderRequest({
-    super.key,
-  });
+//   const UserOrderRequest({
+//     super.key,
+//   });
+final Function() updateState;
+const UserOrderRequest({
+    Key? key,
+    required this.updateState,
+  }) : super(key: key);
 
   displayUserDetails(context, userDetails) {
     return showDialog(
@@ -618,7 +628,36 @@ class UserOrderRequest extends StatelessWidget {
           actions: [
             ElevatedButton(
                 onPressed: () {
+                   HomeTabPage._markers.add(
+                    Marker(
+                        markerId: MarkerId("source"),
+                        position: HomeTabPage._sourceLocation,
+                        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+                        infoWindow: InfoWindow(
+                        title: "Source",
+                        ),
+                    ),
+                    );
+                    HomeTabPage._markers.add(
+                    Marker(
+                        markerId: MarkerId("destination"),
+                        position: HomeTabPage._destinationLocation,
+                        infoWindow: InfoWindow(
+                        title: "Destination",
+                        ),
+                    ),
+                    );
+                    HomeTabPage._polyline.add(Polyline(
+                    polylineId: PolylineId("route1"),
+                    visible: true,
+                    width: 10,
+                    color: Colors.blueAccent,
+                    endCap: Cap.buttCap,
+                    points: [HomeTabPage._sourceLocation, HomeTabPage._destinationLocation],
+                    ));
+                  print('HOME PAGE REFERENCE');
                   Navigator.of(context).pop();
+                  updateState();
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.green,
@@ -703,6 +742,10 @@ class UserOrderRequest extends StatelessWidget {
 }
 
 class PopupContainer extends StatefulWidget {
+    final Function() myState;
+
+  const PopupContainer({required this.myState});
+
   @override
   _PopupContainerState createState() => _PopupContainerState();
 }
@@ -727,6 +770,8 @@ class _PopupContainerState extends State<PopupContainer>
   void dispose() {
     _animationController!.dispose();
     HomeTabPage.allUser.clear();
+    HomeTabPage._markers.clear();
+    HomeTabPage._polyline.clear();
     super.dispose();
   }
 
@@ -775,7 +820,9 @@ class _PopupContainerState extends State<PopupContainer>
         ),
         SizeTransition(
           sizeFactor: _animation!,
-          child: Visibility(visible: _isOpened, child: UserOrderRequest()),
+          child: Visibility(visible: _isOpened, child: UserOrderRequest(
+          updateState: widget.myState,
+        )),
         ),
       ],
     );
