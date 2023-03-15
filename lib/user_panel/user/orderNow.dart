@@ -6,13 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import '../../global/global.dart';
 
 
 class OrderNow extends StatefulWidget {
   const OrderNow({Key? key}) : super(key: key);
-
+  
   @override
   State<OrderNow> createState() => _OrderNowState();
 }
@@ -25,6 +27,7 @@ FocusNode searchFocusNode = FocusNode();
 FocusNode textFieldFocusNode = FocusNode();
 late SingleValueDropDownController _cnt;
 late SingleValueDropDownController _secondCnt;
+Position? currentPosition;
 List dropDownValues = [
     {
         "fuel":"Petrol",
@@ -45,6 +48,46 @@ List dropDownValues = [
 
   User? get firebaseUser => currentFirebaseUser;
 //late MultiValueDropDownController _cntMulti;
+String _address = '';
+  bool _isLoading = false;
+
+  Future<void> _getCurrentUserLocation() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+        final GeolocatorPosition = await Geolocator.getCurrentPosition();
+    setState(() {
+      currentPosition = GeolocatorPosition;
+    });
+    getAddressFromLatLng(currentPosition!.latitude, currentPosition!.longitude);
+    } catch (error) {
+      print(error);
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+  
+  void getAddressFromLatLng(double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(latitude, longitude);
+
+      if (placemarks != null && placemarks.isNotEmpty) {
+        Placemark placemark = placemarks[0];
+        setState(() {
+          _address =
+              '${placemark.name}, ${placemark.locality}, ${placemark.administrativeArea}';
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
 
 SaveOrder(){
 
@@ -62,7 +105,10 @@ SaveOrder(){
       "id":currentFirebaseUser!.uid,
       "Fuel":_cnt.dropDownValue?.name.toString(),
       "Liter":_secondCnt.dropDownValue?.name.toString(),
-      "Price":price
+      "Price":price,
+      "latitude":currentPosition!.latitude,
+      "longitude":currentPosition!.longitude,
+      "Address":_address
     };
     DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
     driversRef.child(currentFirebaseUser!.uid).child("orderDetails").set(userOrder);
@@ -188,6 +234,69 @@ void dispose() {
                   height: 20,
                 ),
                 Container(
+      height: 80,
+      margin: EdgeInsets.only(top: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.only(left: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Your Location',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  _isLoading
+                      ? CircularProgressIndicator()
+                      : currentPosition != null
+              ?Text(
+                          _address,
+                          style: TextStyle(
+                            color: Colors.grey,
+                          ),
+                        )
+              : Container(),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(right: 20),
+            child: IconButton(
+              icon: Icon(
+                Icons.location_on,
+                size: 30,
+                color: Theme.of(context).primaryColor,
+              ),
+              onPressed: _getCurrentUserLocation,
+            ),
+          ),
+        ],
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+    ),const SizedBox(
+                  height: 20,
+                ),
+                Container(
         height: 100.0,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
@@ -235,12 +344,20 @@ void dispose() {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          if(_cnt.dropDownValue.toString().isEmpty && _secondCnt.dropDownValue.toString().isEmpty !=null){
+            print("Helkejlkrejwlrkjw");
+            print(currentPosition);
+            print(_cnt.dropDownValue);
+            print(_secondCnt.dropDownValue);
+          if(_cnt.dropDownValue == null || _secondCnt.dropDownValue == null){
             Fluttertoast.showToast(msg: "Please select value from list.");
+          }
+          else if (currentPosition == null){
+            Fluttertoast.showToast(msg: "Please select your locaiton.");
           }
           else{
             SaveOrder();
           }
+          
          const Text('your order has been confirmed');
          // Navigator.push(context, MaterialPageRoute(builder: (c)=> usermain_screen()));
         },

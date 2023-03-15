@@ -1,5 +1,5 @@
 import 'package:fda/rider_panel/tabPages/earning_tab.dart';
-import 'package:fda/rider_panel/tabPages/home_tab.dart';
+import 'package:fda/rider_panel/tabPages/home_tab/home_tab.dart';
 import 'package:fda/rider_panel/tabPages/profile_tab.dart';
 import 'package:fda/rider_panel/tabPages/ratings_tab.dart';
 import 'package:flutter/material.dart';

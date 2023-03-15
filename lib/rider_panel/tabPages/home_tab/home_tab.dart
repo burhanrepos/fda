@@ -1,5 +1,7 @@
 import 'package:fda/global/global.dart';
 import 'package:fda/models/user_with_orders.dart';
+import 'package:fda/rider_panel/tabPages/home_tab/widgets/popup_container.dart';
+import 'package:fda/rider_panel/tabPages/home_tab/widgets/user_order_request.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,15 +14,15 @@ import 'dart:async';
 //import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../assistants/assistant_methods.dart';
+import '../../../assistants/assistant_methods.dart';
 
 class HomeTabPage extends StatefulWidget {
   const HomeTabPage({Key? key}) : super(key: key);
   static List allUser = [];
-  static Set<Polyline> _polyline = {};
-  static Set<Marker> _markers = {};
-  static LatLng _sourceLocation = LatLng(37.4219999, -122.0840575);
-  static LatLng _destinationLocation = LatLng(37.42796133580664, -122.085749655962);
+  static Set<Polyline> polyline = {};
+  static Set<Marker> markers = {};
+  static LatLng sourceLocation = LatLng(37.4219999, -122.0840575);
+  static LatLng destinationLocation = LatLng(37.42796133580664, -122.085749655962);
    
 
   @override
@@ -38,6 +40,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   var geoLocator = Geolocator();
   LocationPermission? _locationPermission;
   static Key _mapKey = UniqueKey();
+  
     static void  _refreshMap(StateSetter state) {
     state.call((){
       _mapKey = UniqueKey();
@@ -50,7 +53,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
 
   StreamSubscription<Position>? streamSubscriptionPosition;
-  User? get firebaseUser => currentFirebaseUser;
+  static User? get firebaseUser => currentFirebaseUser;
 
   blackThemeGoogleMap() {
     newGoogleMapController!.setMapStyle('''
@@ -259,8 +262,21 @@ class _HomeTabPageState extends State<HomeTabPage> {
   void initState() {
     super.initState();
     getAllOrders();
+    setSourceLocation();
+    
+        // HomeTabPage.sourceLocation =LatLng(ref., longitude)
 
     checkIfLocationPermissionAllowed();
+  }
+  setSourceLocation() async{
+    DatabaseReference ref = FirebaseDatabase.instance
+        .ref()
+        .child("activeDrivers")
+        .child(currentFirebaseUser!.uid)
+        .child("l");
+        DatabaseEvent driverLocation = await ref.once();
+      var location = driverLocation.snapshot.value as List;
+      HomeTabPage.sourceLocation = LatLng(location[0], location[1]);
   }
 
   @override
@@ -281,8 +297,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
             blackThemeGoogleMap();
           },
           
-          polylines: HomeTabPage._polyline,
-          markers: HomeTabPage._markers,
+          polylines: HomeTabPage.polyline,
+          markers: HomeTabPage.markers,
         ),
         statusText != "Now Online"
             ? Container(
@@ -370,6 +386,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   getAllOrders() async {
+      print("All User========================${firebaseUser}");
+
     if (firebaseUser != null) {
       var usersDetails;
       DatabaseReference userReference =
@@ -383,6 +401,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
           HomeTabPage.allUser.add(usersDetails[category]);
         }
       }
+      print("All User========================");
+      print(usersDetails);
     } else {
       Fluttertoast.showToast(msg: "Error while fetching data from firebase.");
     }
@@ -438,393 +458,4 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 }
 
-class UserOrderRequest extends StatelessWidget {
-//   const UserOrderRequest({
-//     super.key,
-//   });
-final Function() updateState;
-const UserOrderRequest({
-    Key? key,
-    required this.updateState,
-  }) : super(key: key);
 
-  displayUserDetails(context, userDetails) {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          contentTextStyle: TextStyle(
-              color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500),
-          titleTextStyle: TextStyle(
-              color: Colors.black,
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              fontFamily: "Montserrat"),
-          title: Text('Order Details'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-                Container(
-          padding: EdgeInsets.all(5.0),
-          margin: EdgeInsets.all(2.5),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Text(
-            'Name: ${userDetails['name'].toString()}',
-            style: TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-              color: Colors.green,
-              letterSpacing: 1.0,
-            ),
-          ),
-        ) ,
-              SizedBox(height: 8.0),
-              Container(
-          padding: EdgeInsets.all(5.0),
-          margin: EdgeInsets.all(2.5),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Text(
-            'Phone: ${userDetails['phone'].toString()}',
-            style: TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-              color: Colors.orangeAccent,
-              letterSpacing: 1.0,
-            ),
-          ),
-        ) ,
-            //   Text('Phone: ${userDetails['phone'].toString()}'),
-              userDetails['orderDetails'] != null
-                  ? SizedBox(height: 8.0)
-                  : SizedBox(),
-              userDetails['orderDetails'] != null
-                  ? 
-                 Container(
-          padding: EdgeInsets.all(5.0),
-          margin: EdgeInsets.all(2.5),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Text(
-            'Fuel: ${userDetails['orderDetails']['Fuel'].toString()}',
-            style: TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-              color: Colors.redAccent,
-              letterSpacing: 1.0,
-            ),
-          ),
-        ) 
-                //   Text(
-                //       'Fuel: ${userDetails['orderDetails']['Fuel'].toString()}')
-                  : SizedBox(),
-              userDetails['orderDetails'] != null
-                  ? SizedBox(height: 8.0)
-                  : SizedBox(),
-              userDetails['orderDetails'] != null
-                  ? Container(
-          padding: EdgeInsets.all(5.0),
-          margin: EdgeInsets.all(2.5),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Text(
-            "Liter: ${userDetails['orderDetails']['Liter'].toString()}",
-            style: TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-              color: Colors.blue,
-              letterSpacing: 1.0,
-            ),
-          ),
-        )
-      
-    //   Text(
-    //                   'Liter: ${userDetails['orderDetails']['Liter'].toString()}')
-                  : SizedBox(),
-            userDetails['orderDetails'] != null
-                ? SizedBox(height: 8.0)
-                : SizedBox(),
-            userDetails['orderDetails'] != null
-                ? 
-                Container(
-          padding: EdgeInsets.all(5.0),
-          margin: EdgeInsets.all(2.5),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Text(
-            'Price: ${userDetails['orderDetails']['Price'].toString()}',
-            style: TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-              color: Colors.purpleAccent,
-              letterSpacing: 1.0,
-            ),
-          ),
-        )
-                // Text(
-                //     'Price: ${userDetails['orderDetails']['Price'].toString()}')
-                : SizedBox(),
-
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-                onPressed: () {
-                   HomeTabPage._markers.add(
-                    Marker(
-                        markerId: MarkerId("source"),
-                        position: HomeTabPage._sourceLocation,
-                        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-                        infoWindow: InfoWindow(
-                        title: "Source",
-                        ),
-                    ),
-                    );
-                    HomeTabPage._markers.add(
-                    Marker(
-                        markerId: MarkerId("destination"),
-                        position: HomeTabPage._destinationLocation,
-                        infoWindow: InfoWindow(
-                        title: "Destination",
-                        ),
-                    ),
-                    );
-                    HomeTabPage._polyline.add(Polyline(
-                    polylineId: PolylineId("route1"),
-                    visible: true,
-                    width: 10,
-                    color: Colors.blueAccent,
-                    endCap: Cap.buttCap,
-                    points: [HomeTabPage._sourceLocation, HomeTabPage._destinationLocation],
-                    ));
-                  print('HOME PAGE REFERENCE');
-                  Navigator.of(context).pop();
-                  updateState();
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.green,
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
-                  ),
-                ),
-                child: Text("Accept order")),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.redAccent,
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
-                  ),
-                ),
-                child: Text("Cancel")),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    List usersRequest = HomeTabPage.allUser;
-
-    return Container(
-      alignment: Alignment.topCenter,
-      padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
-      child: Expanded(
-          child: ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: usersRequest.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                            radius: 30.0,
-                            backgroundColor: Colors.transparent,
-                            backgroundImage:
-                                AssetImage('images/profile_icon.png')
-                                    as ImageProvider),
-                        SizedBox(width: 10.0),
-                        Text(
-                          usersRequest[index]['name'].toString(),
-                          style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                          //   softWrap: true,
-                        ),
-                        SizedBox(width: 10.0),
-                      ],
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        displayUserDetails(context, usersRequest[index]);
-                      },
-                      child: Text('Order details'),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.green,
-                      ),
-                    ),
-                  ],
-                );
-              })),
-      height: MediaQuery.of(context).size.height * 0.3,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-          color: Colors.white),
-    );
-  }
-}
-
-class PopupContainer extends StatefulWidget {
-    final Function() myState;
-
-  const PopupContainer({required this.myState});
-
-  @override
-  _PopupContainerState createState() => _PopupContainerState();
-}
-
-class _PopupContainerState extends State<PopupContainer>
-    with SingleTickerProviderStateMixin {
-  AnimationController? _animationController;
-  Animation<double>? _animation;
-  bool _isOpened = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-    _animation = CurvedAnimation(
-        parent: _animationController!, curve: Curves.fastLinearToSlowEaseIn);
-  }
-
-  @override
-  void dispose() {
-    _animationController!.dispose();
-    HomeTabPage.allUser.clear();
-    HomeTabPage._markers.clear();
-    HomeTabPage._polyline.clear();
-    super.dispose();
-  }
-
-  void _toggleContainer() {
-    setState(() {
-      _isOpened = !_isOpened;
-      if (_isOpened) {
-        _animationController!.forward();
-      } else {
-        _animationController!.reverse();
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ElevatedButton(
-          onPressed: _toggleContainer,
-          style: ElevatedButton.styleFrom(
-            primary: Colors.green,
-            padding: const EdgeInsets.symmetric(horizontal: 18),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(26),
-            ),
-          ),
-          child: Container(
-            width: 100,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text("Orders "),
-                    Text('(${HomeTabPage.allUser.length})',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 17),)
-                  ],
-                ),
-                Icon(_isOpened
-                    ? Icons.arrow_drop_down_sharp
-                    : Icons.arrow_drop_up_sharp),
-              ],
-            ),
-          ),
-        ),
-        SizeTransition(
-          sizeFactor: _animation!,
-          child: Visibility(visible: _isOpened, child: UserOrderRequest(
-          updateState: widget.myState,
-        )),
-        ),
-      ],
-    );
-  }
-}
