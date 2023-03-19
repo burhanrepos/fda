@@ -1,18 +1,26 @@
+import 'package:fda/rider_panel/tabPages/home_tab/widgets/popup_container.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../global/global.dart';
 import '../home_tab.dart';
 
-class UserOrderRequest extends StatelessWidget {
+class UserOrderRequest extends StatefulWidget {
 //   const UserOrderRequest({
 //     super.key,
 //   });
-final Function() updateState;
-const UserOrderRequest({
+  final Function() updateState;
+  const UserOrderRequest({
     Key? key,
     required this.updateState,
   }) : super(key: key);
 
+  @override
+  State<UserOrderRequest> createState() => _UserOrderRequestState();
+}
+
+class _UserOrderRequestState extends State<UserOrderRequest> {
   displayUserDetails(context, userDetails) {
     return showDialog(
       context: context,
@@ -31,201 +39,169 @@ const UserOrderRequest({
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-                Container(
-          padding: EdgeInsets.all(5.0),
-          margin: EdgeInsets.all(2.5),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
+              Container(
+                padding: EdgeInsets.all(5.0),
+                margin: EdgeInsets.all(2.5),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  'Name: ${userDetails['name'].toString()}',
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.green,
+                    letterSpacing: 1.0,
+                  ),
+                ),
               ),
-            ],
-          ),
-          child: Text(
-            'Name: ${userDetails['name'].toString()}',
-            style: TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-              color: Colors.green,
-              letterSpacing: 1.0,
-            ),
-          ),
-        ) ,
               SizedBox(height: 8.0),
               Container(
-          padding: EdgeInsets.all(5.0),
-          margin: EdgeInsets.all(2.5),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
+                padding: EdgeInsets.all(5.0),
+                margin: EdgeInsets.all(2.5),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  'Phone: ${userDetails['phone'].toString()}',
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.orangeAccent,
+                    letterSpacing: 1.0,
+                  ),
+                ),
               ),
-            ],
-          ),
-          child: Text(
-            'Phone: ${userDetails['phone'].toString()}',
-            style: TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-              color: Colors.orangeAccent,
-              letterSpacing: 1.0,
-            ),
-          ),
-        ) ,
-            //   Text('Phone: ${userDetails['phone'].toString()}'),
+              //   Text('Phone: ${userDetails['phone'].toString()}'),
               userDetails['orderDetails'] != null
                   ? SizedBox(height: 8.0)
                   : SizedBox(),
               userDetails['orderDetails'] != null
-                  ? 
-                 Container(
-          padding: EdgeInsets.all(5.0),
-          margin: EdgeInsets.all(2.5),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Text(
-            'Fuel: ${userDetails['orderDetails']['Fuel'].toString()}',
-            style: TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-              color: Colors.redAccent,
-              letterSpacing: 1.0,
-            ),
-          ),
-        ) 
-                //   Text(
-                //       'Fuel: ${userDetails['orderDetails']['Fuel'].toString()}')
+                  ? Container(
+                      padding: EdgeInsets.all(5.0),
+                      margin: EdgeInsets.all(2.5),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        'Fuel: ${userDetails['orderDetails']['Fuel'].toString()}',
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.redAccent,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    )
+                  //   Text(
+                  //       'Fuel: ${userDetails['orderDetails']['Fuel'].toString()}')
                   : SizedBox(),
               userDetails['orderDetails'] != null
                   ? SizedBox(height: 8.0)
                   : SizedBox(),
               userDetails['orderDetails'] != null
                   ? Container(
-          padding: EdgeInsets.all(5.0),
-          margin: EdgeInsets.all(2.5),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Text(
-            "Liter: ${userDetails['orderDetails']['Liter'].toString()}",
-            style: TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-              color: Colors.blue,
-              letterSpacing: 1.0,
-            ),
-          ),
-        )
-      
-    //   Text(
-    //                   'Liter: ${userDetails['orderDetails']['Liter'].toString()}')
-                  : SizedBox(),
-            userDetails['orderDetails'] != null
-                ? SizedBox(height: 8.0)
-                : SizedBox(),
-            userDetails['orderDetails'] != null
-                ? 
-                Container(
-          padding: EdgeInsets.all(5.0),
-          margin: EdgeInsets.all(2.5),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Text(
-            'Price: ${userDetails['orderDetails']['Price'].toString()}',
-            style: TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-              color: Colors.purpleAccent,
-              letterSpacing: 1.0,
-            ),
-          ),
-        )
-                // Text(
-                //     'Price: ${userDetails['orderDetails']['Price'].toString()}')
-                : SizedBox(),
+                      padding: EdgeInsets.all(5.0),
+                      margin: EdgeInsets.all(2.5),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        "Liter: ${userDetails['orderDetails']['Liter'].toString()}",
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.blue,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    )
 
+                  //   Text(
+                  //                   'Liter: ${userDetails['orderDetails']['Liter'].toString()}')
+                  : SizedBox(),
+              userDetails['orderDetails'] != null
+                  ? SizedBox(height: 8.0)
+                  : SizedBox(),
+              userDetails['orderDetails'] != null
+                  ? Container(
+                      padding: EdgeInsets.all(5.0),
+                      margin: EdgeInsets.all(2.5),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        'Price: ${userDetails['orderDetails']['Price'].toString()}',
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.purpleAccent,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    )
+                  // Text(
+                  //     'Price: ${userDetails['orderDetails']['Price'].toString()}')
+                  : SizedBox(),
             ],
           ),
           actions: [
             ElevatedButton(
                 onPressed: () {
-                   HomeTabPage.destinationLocation = LatLng(userDetails['orderDetails']['latitude'], userDetails['orderDetails']['longitude']);
-                   print("Destination =======${HomeTabPage.destinationLocation}");
-                   print("Source =======${HomeTabPage.sourceLocation}");
-                   HomeTabPage.markers.add(
-                    Marker(
-                        markerId: MarkerId("source"),
-                        position: HomeTabPage.sourceLocation,
-                        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-                        infoWindow: InfoWindow(
-                        title: "Source",
-                        ),
-                    ),
-                    );
-                    HomeTabPage.markers.add(
-                    Marker(
-                        markerId: MarkerId("destination"),
-                        position: HomeTabPage.destinationLocation,
-                        infoWindow: InfoWindow(
-                        title: "Destination",
-                        ),
-                    ),
-                    );
-                    HomeTabPage.polyline.add(Polyline(
-                    polylineId: PolylineId("route1"),
-                    visible: true,
-                    width: 10,
-                    color: Colors.blueAccent,
-                    endCap: Cap.buttCap,
-                    points: [HomeTabPage.sourceLocation, HomeTabPage.destinationLocation],
-                    ));
-                  print('HOME PAGE REFERENCE');
-                  Navigator.of(context).pop();
-                  updateState();
+                  addOrderToActiveOrders(userDetails);
+                  drawPoliline(context, userDetails);
+                  PopupContainer.driverWithActiveOrder = true;
+                  widget.updateState();
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.green,
@@ -251,6 +227,58 @@ const UserOrderRequest({
         );
       },
     );
+  }
+
+  drawPoliline(context, userDetails) {
+    HomeTabPage.destinationLocation = LatLng(
+        userDetails['orderDetails']['latitude'],
+        userDetails['orderDetails']['longitude']);
+    print("Destination =======${HomeTabPage.destinationLocation}");
+    print("Source =======${HomeTabPage.sourceLocation}");
+    HomeTabPage.markers.add(
+      Marker(
+        markerId: MarkerId("source"),
+        position: HomeTabPage.sourceLocation,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        infoWindow: InfoWindow(
+          title: "Source",
+        ),
+      ),
+    );
+    HomeTabPage.markers.add(
+      Marker(
+        markerId: MarkerId("destination"),
+        position: HomeTabPage.destinationLocation,
+        infoWindow: InfoWindow(
+          title: "Destination",
+        ),
+      ),
+    );
+    HomeTabPage.polyline.add(Polyline(
+      polylineId: PolylineId("route1"),
+      visible: true,
+      width: 10,
+      color: Colors.blueAccent,
+      endCap: Cap.buttCap,
+      points: [HomeTabPage.sourceLocation, HomeTabPage.destinationLocation],
+    ));
+    print('HOME PAGE REFERENCE');
+    Navigator.of(context).pop();
+  }
+
+  addOrderToActiveOrders(userDetails) {
+    userDetails['riderId']= currentFirebaseUser!.uid;
+    userDetails['orderDetails']['placed'] = true;
+    userDetails['orderDetails']['accept'] = true;
+    userDetails['orderDetails']['processed'] = false;
+    userDetails['orderDetails']['delivered'] = false;
+    DatabaseReference? ref = FirebaseDatabase.instance
+        .ref()
+        .child("activeOrders")
+        .child(currentFirebaseUser!.uid);
+    DatabaseReference orderRefrence =
+        FirebaseDatabase.instance.ref().child("activeOrders");
+    orderRefrence.child(currentFirebaseUser!.uid).set(userDetails);
   }
 
   @override

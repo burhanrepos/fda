@@ -12,8 +12,8 @@ void main() async {
       child:MaterialApp(
         title: 'Fuel Deliver APP',
         theme: ThemeData(
-
-          primarySwatch: Colors.blue,
+            fontFamily: "Poppins",
+          primarySwatch: Colors.green,
         ),
         home: const MySplashScreen(),
         debugShowCheckedModeBanner: false,

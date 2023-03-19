@@ -256,6 +256,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
   void _updateState() {
     setState(() { });
+    initState();
+    setState(() { });
+
   }
 
   @override

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:fda/global/global.dart';
-import 'package:fda/user_panel/user/orderNow.dart';
+import 'package:fda/user_panel/user/order_now/orderNow.dart';
 import 'package:fda/widgets/divider.dart';
 import 'package:fda/widgets/mydrawer.dart';
 import 'package:flutter/material.dart';

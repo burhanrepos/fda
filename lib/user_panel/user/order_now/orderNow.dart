@@ -9,7 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
-import '../../global/global.dart';
+import '../../../global/global.dart';
+import 'package:intl/intl.dart';
 
 
 class OrderNow extends StatefulWidget {
@@ -108,7 +109,9 @@ SaveOrder(){
       "Price":price,
       "latitude":currentPosition!.latitude,
       "longitude":currentPosition!.longitude,
-      "Address":_address
+      "Address":_address,
+      "orderStatus":"orderPlaced",
+      "orderDate": DateFormat('MM-dd-yyyy').format(DateTime.now()),
     };
     DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
     driversRef.child(currentFirebaseUser!.uid).child("orderDetails").set(userOrder);
