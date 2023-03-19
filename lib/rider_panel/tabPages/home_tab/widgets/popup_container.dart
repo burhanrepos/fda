@@ -34,6 +34,9 @@ class _PopupContainerState extends State<PopupContainer>
   void initState() {
     super.initState();
     checkDriverWithOrder();
+    setState(() {
+      
+    });
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     _animation = CurvedAnimation(
