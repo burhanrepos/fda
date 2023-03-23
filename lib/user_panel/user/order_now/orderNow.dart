@@ -137,7 +137,6 @@ void initState() {
 void dispose() {
   _cnt.dispose();
   _secondCnt.dispose();
-  _secondCnt.dispose();
  // _cntMulti.dispose();
   super.dispose();
 }

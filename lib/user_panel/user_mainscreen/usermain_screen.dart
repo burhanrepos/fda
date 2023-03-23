@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:fda/global/global.dart';
 import 'package:fda/user_panel/user/order_now/orderNow.dart';
+import 'package:fda/user_panel/user/order_now/widget/user_order_progress.dart';
 import 'package:fda/widgets/divider.dart';
 import 'package:fda/widgets/mydrawer.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
@@ -14,10 +16,14 @@ import 'package:flutter/services.dart';
 import '../../assistants/assistant_methods.dart';
 import '../../assistants/geofire_assistant.dart';
 import 'package:fda/models/active_nearby_available_drivers.dart';
+
 //import '../mainScreens/searchScreen.dart';
 //import '../models/active_nearby_available_drivers.dart';
 class UserMainScreen extends StatefulWidget {
   const UserMainScreen({super.key});
+  static Map<Object?, Object?>? allActiveOrders;
+  static String idOfActiveOrderRider = "";
+  static var activeOrderDetails;
 
   @override
   State<UserMainScreen> createState() => _UserMainScreenState();
@@ -164,14 +170,15 @@ class UserMainScreen extends StatefulWidget {
 } */
 
 class _UserMainScreenState extends State<UserMainScreen> {
-  final Completer<GoogleMapController> _controllerGoogleMap = Completer<GoogleMapController>();
-  GoogleMapController?newGoogleMapController;
-  GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
- 
- // late Position currentPosition;
- // var geoLocator= Geolocator();
+  final Completer<GoogleMapController> _controllerGoogleMap =
+      Completer<GoogleMapController>();
+  GoogleMapController? newGoogleMapController;
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // late Position currentPosition;
+  // var geoLocator= Geolocator();
   //double bottomPadding=0;
- // Position? userCurrentPosition;
+  // Position? userCurrentPosition;
 
   //yeh new wala ha
   Position? userCurrentPosition;
@@ -193,31 +200,35 @@ class _UserMainScreenState extends State<UserMainScreen> {
 
   bool activeNearbyDriverKeysLoaded = false;
   BitmapDescriptor? activeNearbyIcon;
+  Timer? timer;
 
-  checkIfLocationPermissionAllowed() async
-  {
+  checkIfLocationPermissionAllowed() async {
     _locationPermission = await Geolocator.requestPermission();
 
-    if(_locationPermission == LocationPermission.denied)
-    {
+    if (_locationPermission == LocationPermission.denied) {
       _locationPermission = await Geolocator.requestPermission();
     }
   }
 
-  void locatePosition() async{
-    Position cPosition=await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    userCurrentPosition=cPosition;
-    LatLng latLngPosition= LatLng(userCurrentPosition!.latitude, userCurrentPosition!.longitude);
-    CameraPosition cameraPosition=CameraPosition(target: latLngPosition,zoom: 14);
-    newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-    String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoOrdinates(userCurrentPosition!, context);
+  void locatePosition() async {
+    Position cPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    userCurrentPosition = cPosition;
+    LatLng latLngPosition =
+        LatLng(userCurrentPosition!.latitude, userCurrentPosition!.longitude);
+    CameraPosition cameraPosition =
+        CameraPosition(target: latLngPosition, zoom: 14);
+    newGoogleMapController!
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    String humanReadableAddress =
+        await AssistantMethods.searchAddressForGeographicCoOrdinates(
+            userCurrentPosition!, context);
     print("this is your address = " + humanReadableAddress);
 
     userName = userModelCurrentInfo!.name!;
     userEmail = userModelCurrentInfo!.email!;
 
     initializeGeoFireListener();
-
   }
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -225,9 +236,31 @@ class _UserMainScreenState extends State<UserMainScreen> {
     zoom: 14,
   );
 
+  getAllActiveOrders() async {
+    var activeOrders;
+    DatabaseReference userReference =
+        FirebaseDatabase.instance.ref().child("activeOrders");
+    // Get the data once
+    DatabaseEvent usersWithOrder = await userReference.once();
+    activeOrders = usersWithOrder.snapshot.value;
 
-  blackThemeGoogleMap()
-  {
+    for (var category in activeOrders.keys) {
+      if (activeOrders[category]['orderDetails']['id'] ==
+          currentFirebaseUser!.uid) {
+        UserMainScreen.allActiveOrders = activeOrders;
+        UserMainScreen.idOfActiveOrderRider = category;
+        UserMainScreen.activeOrderDetails = activeOrders[category];
+        print("=============Active Order Get Successfully==================");
+        print(UserMainScreen.activeOrderDetails != null);
+
+        if (activeOrders[category]['orderDetails']['completed'] == true)
+          timer?.cancel();
+        setState(() {});
+      }
+    }
+  }
+
+  blackThemeGoogleMap() {
     newGoogleMapController!.setMapStyle('''
                     [
                       {
@@ -394,33 +427,34 @@ class _UserMainScreenState extends State<UserMainScreen> {
   }
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
-
+    timer = Timer.periodic(
+        Duration(seconds: 15), (Timer t) => getAllActiveOrders());
     checkIfLocationPermissionAllowed();
   }
-  
 
+updateState(){
+    setState(() {
+      
+    });
+}
   @override
   Widget build(BuildContext context) {
     createActiveNearbyDriverIconMarker();
     return Scaffold(
-    key: scaffoldKey,
-
-    drawer: Container(
-      width: 263,
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          canvasColor: Colors.black54
-        ),
-        child: MyDrawer(
-          name: userModelCurrentInfo!.name,
-          email: userModelCurrentInfo!.email,
+      key: scaffoldKey,
+      drawer: Container(
+        width: 263,
+        child: Theme(
+          data: Theme.of(context).copyWith(canvasColor: Colors.black54),
+          child: MyDrawer(
+            name: userModelCurrentInfo!.name,
+            email: userModelCurrentInfo!.email,
+          ),
         ),
       ),
-    ),
-   /*color: Colors.white,
+      /*color: Colors.white,
         width: 255.0,
         child: Drawer(
           child: ListView(
@@ -469,132 +503,158 @@ class _UserMainScreenState extends State<UserMainScreen> {
 
     ),
     ),*/
-        body: Stack(
+      body: Stack(
         children: [
-        GoogleMap(
-          padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
-        mapType: MapType.normal,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: false,
-        zoomGesturesEnabled: true,
-        zoomControlsEnabled: true,
-          markers: markersSet,
-          circles: circlesSet,
-       // polylines: _polyline,
-        initialCameraPosition: _kGooglePlex,
-        //markers: Set<Marker>.of(_markers),
-          compassEnabled: true,
-         onMapCreated: (GoogleMapController controller)
-        {
-         _controllerGoogleMap.complete(controller);
-          newGoogleMapController= controller;
-         blackThemeGoogleMap();
-          setState(() {
-            bottomPaddingOfMap=265.0;
-          });
-          locatePosition();
-    },
-    ),
-        Positioned(
-        right: 0.0,
-        left: 0.0,
-        bottom: 0.0,
-        child: Container(
-          height: 250.0,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(18.0),topRight: Radius.circular(18.0)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black,
-                blurRadius: 16.0,
-                spreadRadius: 0.5,
-                offset: Offset(0.7, 0.7),
-              ),
-            ],
+          GoogleMap(
+            padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
+            mapType: MapType.normal,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
+            zoomGesturesEnabled: true,
+            zoomControlsEnabled: true,
+            markers: markersSet,
+            circles: circlesSet,
+            // polylines: _polyline,
+            initialCameraPosition: _kGooglePlex,
+            //markers: Set<Marker>.of(_markers),
+            compassEnabled: true,
+            onMapCreated: (GoogleMapController controller) {
+              _controllerGoogleMap.complete(controller);
+              newGoogleMapController = controller;
+              blackThemeGoogleMap();
+              setState(() {
+                bottomPaddingOfMap = 265.0;
+              });
+              locatePosition();
+            },
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14.0,vertical: 10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 6.0),
-                Text("Hi There",style: TextStyle(fontSize: 12.0),),
-                Text("We got your current location!",style: TextStyle(fontSize: 20.0, fontFamily: "Brand-Bold"),),
-                SizedBox(height: 20.0),
-                GestureDetector(
-                  onTap:() {
-                   // Navigator.push(context,MaterialPageRoute(builder: (context)=>SearchScreen()));
-                  },
-                  child: Container(
+          Positioned(
+            right: 0.0,
+            left: 0.0,
+            bottom: 0.0,
+            child: UserMainScreen.activeOrderDetails != null
+                ? UserOrderProgress(updateState: updateState)
+                : Container(
+                    height: 250.0,
                     decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(2.0),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(18.0),
+                          topRight: Radius.circular(18.0)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.white70,
-                          blurRadius: 6.0,
+                          color: Colors.black,
+                          blurRadius: 16.0,
                           spreadRadius: 0.5,
                           offset: Offset(0.7, 0.7),
                         ),
                       ],
                     ),
-                    child:ElevatedButton(
-                      onPressed: () {
-                        locatePosition();
-                      },
-                      child: Row(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14.0, vertical: 10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.location_on, color: Colors.grey,),
-                          SizedBox(width: 4,),
-                          Text("Want to reget your current location!"),
-                        ],
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
+                          SizedBox(height: 6.0),
+                          Text(
+                            "Hi There",
+                            style: TextStyle(fontSize: 12.0),
+                          ),
+                          Text(
+                            "We got your current location!",
+                            style: TextStyle(
+                                fontSize: 20.0, fontFamily: "Brand-Bold"),
+                          ),
+                          SizedBox(height: 20.0),
+                          GestureDetector(
+                            onTap: () {
+                              // Navigator.push(context,MaterialPageRoute(builder: (context)=>SearchScreen()));
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(2.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.white70,
+                                    blurRadius: 6.0,
+                                    spreadRadius: 0.5,
+                                    offset: Offset(0.7, 0.7),
+                                  ),
+                                ],
+                              ),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  locatePosition();
+                                },
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.location_on,
+                                      color: Colors.grey,
+                                    ),
+                                    SizedBox(
+                                      width: 4,
+                                    ),
+                                    Text(
+                                        "Want to reget your current location!"),
+                                  ],
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                          // DividerWidget(),
 
+                          //Elevated button use krna ha
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          DividerWidget(),
+                          SizedBox(
+                            height: 16.0,
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => OrderNow()));
+                            },
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.shopping_cart,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(
+                                  width: 12.0,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    //   Text("Order Now ",style: TextStyle(fontSize: 12.0),),
+                                    SizedBox(height: 4.0),
+                                    Text(
+                                      "Order Now!",
+                                      style: TextStyle(
+                                          fontSize: 12.0,
+                                          fontFamily: "Brand-Bold"),
+                                    ),
+                                    // SizedBox(height: 20.0),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black,
+                            ),
+                          ),
 
-                      ),
-                    ),
-
-                  ),
-                ),
-               // DividerWidget(),
-
-
-                 //Elevated button use krna ha
-                 SizedBox(height: 10.0,),
-                 DividerWidget(),
-                  SizedBox(height: 16.0,),
-                 ElevatedButton(onPressed: (){
-                   Navigator.push(context,MaterialPageRoute(builder: (context)=>OrderNow()));
-                 },
-
-                     child: Row(
-                       children: [
-                         Icon(Icons.shopping_cart,color: Colors.grey,),
-                         SizedBox(width: 12.0,),
-                         Column(
-                           crossAxisAlignment: CrossAxisAlignment.start,
-                           children: [
-                          //   Text("Order Now ",style: TextStyle(fontSize: 12.0),),
-                             SizedBox(height: 4.0),
-                             Text("Order Now!",style: TextStyle(fontSize: 12.0, fontFamily: "Brand-Bold"),),
-                            // SizedBox(height: 20.0),
-                           ],
-                         ),
-                       ],
-
-
-                     ),
-                   style: ElevatedButton.styleFrom(
-                     backgroundColor: Colors.black,
-
-
-                   ),
-                 ),
-
-                 /* Row(
+                          /* Row(
                  children: [
                   Icon(Icons.shopping_cart,color: Colors.grey,),
                   SizedBox(width: 12.0,),
@@ -609,21 +669,16 @@ class _UserMainScreenState extends State<UserMainScreen> {
     ),
         ],
         ),*/
-
-              ],
-            ),
+                        ],
+                      ),
+                    ),
+                  ),
           ),
-        ),
-
-    ),
-
-
           Positioned(
             top: 30,
             left: 14,
             child: GestureDetector(
-              onTap: ()
-              {
+              onTap: () {
                 scaffoldKey.currentState!.openDrawer();
               },
               child: const CircleAvatar(
@@ -635,17 +690,17 @@ class _UserMainScreenState extends State<UserMainScreen> {
               ),
             ),
           ),
-],
-        ),
+        ],
+      ),
     );
-
-
   }
-  initializeGeoFireListener()
-  {
+
+  initializeGeoFireListener() {
     Geofire.initialize("activeDrivers");
 
-    Geofire.queryAtLocation(userCurrentPosition!.latitude, userCurrentPosition!.longitude, 15)!.listen((map) {
+    Geofire.queryAtLocation(
+            userCurrentPosition!.latitude, userCurrentPosition!.longitude, 15)!
+        .listen((map) {
       print(map);
       if (map != null) {
         var callBack = map['callBack'];
@@ -653,38 +708,40 @@ class _UserMainScreenState extends State<UserMainScreen> {
         //latitude will be retrieved from map['latitude']
         //longitude will be retrieved from map['longitude']
 
-        switch (callBack)
-            {
-        //whenever any driver become active/online
+        switch (callBack) {
+          //whenever any driver become active/online
           case Geofire.onKeyEntered:
-            ActiveNearbyAvailableDrivers activeNearbyAvailableDriver = ActiveNearbyAvailableDrivers();
+            ActiveNearbyAvailableDrivers activeNearbyAvailableDriver =
+                ActiveNearbyAvailableDrivers();
             activeNearbyAvailableDriver.locationLatitude = map['latitude'];
             activeNearbyAvailableDriver.locationLongitude = map['longitude'];
             activeNearbyAvailableDriver.driverId = map['key'];
-            GeoFireAssistant.activeNearbyAvailableDriversList.add(activeNearbyAvailableDriver);
-            if(activeNearbyDriverKeysLoaded == true)
-            {
+            GeoFireAssistant.activeNearbyAvailableDriversList
+                .add(activeNearbyAvailableDriver);
+            if (activeNearbyDriverKeysLoaded == true) {
               displayActiveDriversOnUsersMap();
             }
             break;
 
-        //whenever any driver become non-active/offline
+          //whenever any driver become non-active/offline
           case Geofire.onKeyExited:
             GeoFireAssistant.deleteOfflineDriverFromList(map['key']);
             displayActiveDriversOnUsersMap();
             break;
 
-        //whenever driver moves - update driver location
+          //whenever driver moves - update driver location
           case Geofire.onKeyMoved:
-            ActiveNearbyAvailableDrivers activeNearbyAvailableDriver = ActiveNearbyAvailableDrivers();
+            ActiveNearbyAvailableDrivers activeNearbyAvailableDriver =
+                ActiveNearbyAvailableDrivers();
             activeNearbyAvailableDriver.locationLatitude = map['latitude'];
             activeNearbyAvailableDriver.locationLongitude = map['longitude'];
             activeNearbyAvailableDriver.driverId = map['key'];
-            GeoFireAssistant.updateActiveNearbyAvailableDriverLocation(activeNearbyAvailableDriver);
+            GeoFireAssistant.updateActiveNearbyAvailableDriverLocation(
+                activeNearbyAvailableDriver);
             displayActiveDriversOnUsersMap();
             break;
 
-        //display those online/active drivers on user's map
+          //display those online/active drivers on user's map
           case Geofire.onGeoQueryReady:
             activeNearbyDriverKeysLoaded = true;
             displayActiveDriversOnUsersMap();
@@ -696,21 +753,20 @@ class _UserMainScreenState extends State<UserMainScreen> {
     });
   }
 
-  displayActiveDriversOnUsersMap()
-  {
+  displayActiveDriversOnUsersMap() {
     setState(() {
       markersSet.clear();
       circlesSet.clear();
 
       Set<Marker> driversMarkerSet = Set<Marker>();
 
-
-      for(ActiveNearbyAvailableDrivers eachDriver in GeoFireAssistant.activeNearbyAvailableDriversList)
-      {
-        LatLng eachDriverActivePosition = LatLng(eachDriver.locationLatitude!, eachDriver.locationLongitude!);
+      for (ActiveNearbyAvailableDrivers eachDriver
+          in GeoFireAssistant.activeNearbyAvailableDriversList) {
+        LatLng eachDriverActivePosition =
+            LatLng(eachDriver.locationLatitude!, eachDriver.locationLongitude!);
 
         Marker marker = Marker(
-          markerId: MarkerId("driver"+eachDriver.driverId!),
+          markerId: MarkerId("driver" + eachDriver.driverId!),
           position: eachDriverActivePosition,
           icon: activeNearbyIcon!,
           rotation: 360,
@@ -724,17 +780,22 @@ class _UserMainScreenState extends State<UserMainScreen> {
       });
     });
   }
-  createActiveNearbyDriverIconMarker(){
-    if(activeNearbyIcon==null ){
-      ImageConfiguration imageConfiguration =  createLocalImageConfiguration(context,size: const Size(2, 2));
-      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/uber_Moto.png").then((value){
-        activeNearbyIcon=value;
 
+  createActiveNearbyDriverIconMarker() {
+    if (activeNearbyIcon == null) {
+      ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context, size: const Size(2, 2));
+      BitmapDescriptor.fromAssetImage(
+              imageConfiguration, "images/uber_Moto.png")
+          .then((value) {
+        activeNearbyIcon = value;
       });
-
     }
-
   }
 
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
 }
-  

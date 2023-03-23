@@ -76,7 +76,13 @@ class _OrderProgressBarState extends State<OrderProgressBar> {
       
     });
   }
-
+    orderCompleted(userDetails) {
+        userDetails['orderDetails']['completed'] = true;
+        orderRefrence.child(currentFirebaseUser!.uid).set(userDetails);
+        setState(() {
+        
+        });
+    }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -437,7 +443,7 @@ class _OrderProgressBarState extends State<OrderProgressBar> {
                                   ['delivered'] ==
                               true 
                           ?ElevatedButton(onPressed: (){
-                              orderDelivered(PopupContainer.currentRiderOrderInProgress);
+                              orderCompleted(PopupContainer.currentRiderOrderInProgress);
                           }, child: Text(
                           'Delivered',
                           style: TextStyle(

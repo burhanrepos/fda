@@ -272,6 +272,7 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
     userDetails['orderDetails']['accept'] = true;
     userDetails['orderDetails']['processed'] = false;
     userDetails['orderDetails']['delivered'] = false;
+    userDetails['orderDetails']['completed'] = false;
     DatabaseReference? ref = FirebaseDatabase.instance
         .ref()
         .child("activeOrders")
