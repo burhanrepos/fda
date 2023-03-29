@@ -435,6 +435,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
   }
 
 updateState(){
+    UserMainScreen.activeOrderDetails=null;
     setState(() {
       
     });

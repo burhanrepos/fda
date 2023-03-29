@@ -50,6 +50,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
   String statusText = "Now Offline";
   Color buttonColor = Colors.grey;
   bool isDriverActive = false;
+  Timer? timer;
+
 
 
   StreamSubscription<Position>? streamSubscriptionPosition;
@@ -264,7 +266,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
   @override
   void initState() {
     super.initState();
-    getAllOrders();
+    timer = Timer.periodic(
+        Duration(seconds: 15), (Timer t) => getAllOrders());
+    // getAllOrders();
     setSourceLocation();
     
         // HomeTabPage.sourceLocation =LatLng(ref., longitude)
@@ -399,6 +403,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
       DatabaseEvent usersWithOrder = await userReference.once();
       usersDetails = usersWithOrder.snapshot.value;
       currentFirebaseUser = firebaseUser;
+      HomeTabPage.allUser = [];
       for (var category in usersDetails.keys) {
         if (usersDetails[category]['orderDetails'] != null) {
           HomeTabPage.allUser.add(usersDetails[category]);
@@ -406,6 +411,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
       }
       print("All User========================");
       print(usersDetails);
+    //   setState(() {
+        
+    //   });
     } else {
       Fluttertoast.showToast(msg: "Error while fetching data from firebase.");
     }

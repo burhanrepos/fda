@@ -15,13 +15,18 @@ class UserOrderProgress extends StatefulWidget {
 }
 
 class _UserOrderProgressState extends State<UserOrderProgress> {
+    DatabaseReference orderRefrence =
+        FirebaseDatabase.instance.ref().child("activeOrders");
      orderCompleted(userDetails) {
         // UserMainScreen.activeOrderDetails=;
+        userDetails['orderDetails']['received'] = true;
+        orderRefrence.child(userDetails['riderId']).set(userDetails);
         dispose();
         widget.updateState();
     }
     @override
     dispose(){
+        super.dispose();
         UserMainScreen.activeOrderDetails =null;
     }
   @override

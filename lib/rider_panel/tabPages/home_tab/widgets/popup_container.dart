@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:fda/rider_panel/tabPages/home_tab/widgets/order_progress_bar.dart';
 import 'package:fda/rider_panel/tabPages/home_tab/widgets/user_order_request.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -29,11 +30,14 @@ class _PopupContainerState extends State<PopupContainer>
       .child(currentFirebaseUser!.uid);
   var snapshotDriversOrder;
   bool loadingOrder = false;
+  Timer? timer;
 
   @override
   void initState() {
     super.initState();
-    checkDriverWithOrder();
+    timer = Timer.periodic(
+        const Duration(seconds: 10), (Timer t) => checkDriverWithOrder());
+    // checkDriverWithOrder();
     setState(() {
       
     });
@@ -122,7 +126,7 @@ class _PopupContainerState extends State<PopupContainer>
                               children: [
                                 Text("Orders "),
                                 Text(
-                                  '(${HomeTabPage.allUser.length})',
+                                  HomeTabPage.allUser.length>0?'(${HomeTabPage.allUser.length})':'',
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,

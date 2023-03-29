@@ -273,6 +273,7 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
     userDetails['orderDetails']['processed'] = false;
     userDetails['orderDetails']['delivered'] = false;
     userDetails['orderDetails']['completed'] = false;
+    userDetails['orderDetails']['received'] = false;
     DatabaseReference? ref = FirebaseDatabase.instance
         .ref()
         .child("activeOrders")
@@ -280,6 +281,18 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
     DatabaseReference orderRefrence =
         FirebaseDatabase.instance.ref().child("activeOrders");
     orderRefrence.child(currentFirebaseUser!.uid).set(userDetails);
+
+
+  }
+  removeOrderFromUser(userDetails){
+        print("User Details runtime type ==");
+    Map<Object?, Object?> userForRemovalOrder = {...userDetails}; // The original Map that you want to clone
+    userForRemovalOrder.remove('orderDetails');
+    DatabaseReference removeOrderReference =
+        FirebaseDatabase.instance.ref().child("users")
+        .child(userDetails['id']);
+          // removeOrderReference.set(userForRemovalOrder);
+    print("User Details runtime type After==");
   }
 
   @override
@@ -289,7 +302,7 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
     return Container(
       alignment: Alignment.topCenter,
       padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
-      child: Expanded(
+      child: HomeTabPage.allUser.length>0?Expanded(
           child: ListView.builder(
               padding: const EdgeInsets.all(8),
               itemCount: usersRequest.length,
@@ -328,7 +341,7 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
                     ),
                   ],
                 );
-              })),
+              })):Container(child: Text("No order available",style: TextStyle(fontWeight: FontWeight.bold),),),
       height: MediaQuery.of(context).size.height * 0.3,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
