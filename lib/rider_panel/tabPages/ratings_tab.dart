@@ -1,208 +1,233 @@
-// import 'package:flutter/material.dart';
-// class RatingsTabPage extends StatefulWidget {
-//   const RatingsTabPage({Key? key}) : super(key: key);
-
-//   @override
-//   State<RatingsTabPage> createState() => _RatingsTabPageState();
-// }
-
-// class _RatingsTabPageState extends State<RatingsTabPage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Center(
-//       child: Text("Ratings"),
-//     );
-//   }
-// }
 
 
+
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-class RatingsTabPage extends StatelessWidget {
-    const RatingsTabPage({Key? key}) : super(key: key);
+import '../../global/global.dart';
 
+class RatingsTabPage extends StatefulWidget {
+  const RatingsTabPage({Key? key}) : super(key: key);
+
+  @override
+  _RatingsTabPageState createState() => _RatingsTabPageState();
+}
+
+class _RatingsTabPageState extends State<RatingsTabPage> {
+  int oneStarCount = 0;
+  int twoStarCount = 0;
+  int threeStarCount = 0;
+  int fourStarCount = 0;
+  int fiveStarCount = 0;
+  double _rating = 0;
+
+  @override
+  initState() {
+    getRatingData();
+  }
+
+  getRatingData() async {
+    DatabaseReference? ref = FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(currentFirebaseUser!.uid);
+    // Get the data once
+    DatabaseEvent ratingList = await ref.child("rating").once();
+    DatabaseEvent overallRating = await ref.child("totalRating").once();
+    var ratingDetail = ratingList.snapshot.value;
+    var overAllRatingValue = overallRating.snapshot.value;
+    if (ratingDetail != null && overAllRatingValue != null) {
+      _rating = double.parse(overAllRatingValue.toString());
+      var ratingList = [...(ratingDetail as List<Object?>)];
+      ratingList.removeAt(0);
+      oneStarCount = int.parse(ratingList[0].toString());
+      twoStarCount = int.parse(ratingList[1].toString());
+      threeStarCount = int.parse(ratingList[2].toString());
+      fourStarCount = int.parse(ratingList[3].toString());
+      fiveStarCount = int.parse(ratingList[4].toString());
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-  String email = "hafiz.burhan834@gmail.com";
-  String name = "Burhan";
-  String phone = "123214124";
-  String rating ="5";
-   return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height * 0.3,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue.shade600, Colors.blue.shade400],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 80,
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          Text(
-                            'Profile',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(width: 48.0),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 16.0,
-                    right: 16.0,
-                    child: Container(
-                      height: 120,
-                      padding: EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: Colors.redAccent,
-                        borderRadius: BorderRadius.circular(16.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.shade300,
-                            blurRadius: 10.0,
-                            offset: Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 30,
-                                backgroundColor: Colors.grey.shade200,
-                                child: Icon(
-                                  Icons.person,
-                                  size: 40,
-                                  color: Colors.grey.shade700,
-                                ),
-                              ),
-                              SizedBox(width: 16.0),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    name,
-                                    style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 7.0),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.star,
-                                        color: Colors.yellow.shade700,
-                                        size: 16.0,
-                                      ),
-                                      SizedBox(width: 4.0),
-                                      Text(
-                                        rating.toString(),
-                                        style: TextStyle(
-                                          color: Colors.grey.shade700,
-                                          fontSize: 16.0,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              Spacer(),
-                              GestureDetector(
-                                onTap: () {
-                                  // TODO: Implement edit profile functionality
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.all(8.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade200,
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  child: Icon(Icons.edit, color: Colors.grey.shade700),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 66.0),
-                                    // SizedBox(height: 16.0),
-                          Text(
-                            'Email',
-                            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 4.0),
-                          Text(
-                            email,
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                          SizedBox(height: 16.0),
-                          Text(
-                            'Phone',
-                            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 4.0),
-                          Text(
-                            phone,
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Rating'),
+      ),
+      body: Container(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 10.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ElevatedButton(
-                      child: Text('Sign Out'),
-                      onPressed: () {
-                        // TODO: Implement sign out functionality
-                      },
+                    Center(
+                      child: Text(
+                        'Your overall rating',
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[800],
+                        ),
+                      ),
                     ),
-                    SizedBox(height: 16.0),
                   ],
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                child: Container(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(height: 20.0),
+                          _buildRatingBar(5, fiveStarCount),
+                          _buildRatingBar(4, fourStarCount),
+                          _buildRatingBar(3, threeStarCount),
+                          _buildRatingBar(2, twoStarCount),
+                          _buildRatingBar(1, oneStarCount),
+                          SizedBox(height: 20.0),
+                          SizedBox(height: 20.0),
+                          SizedBox(height: 20.0),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric( vertical: 10.0),
+                                child: Text(
+                                  'Star Rating',
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green[800],
+                                  ),
+                                ),
+                              ),
+                              RatingBar.builder(
+                                initialRating: _rating,
+                                minRating: 1,
+                                direction: Axis.horizontal,
+                                allowHalfRating: true,
+                                itemCount: 5,
+                                tapOnlyMode: true,
+                                ignoreGestures: true,
+                                itemPadding:
+                                    EdgeInsets.symmetric(horizontal: 2.0),
+                                itemBuilder: (context, _) => Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                ),
+                                onRatingUpdate: (rating) {},
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
-                        
+  }
+
+  Widget _buildRatingBar(int rating, int count) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Row(
+              children: [
+                Text(
+                  '$rating',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                ),
+                Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 10.0),
+          Expanded(
+            flex: 7,
+            child: Stack(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    height: 30.0,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    height: 30.0,
+                    width: 10.0 * count.toDouble(),
+                    decoration: BoxDecoration(
+                      color: Colors.amber,
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      '$count',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _incrementCount(int rating) {
+    setState(() {
+      switch (rating) {
+        case 1:
+          oneStarCount++;
+          break;
+        case 2:
+          twoStarCount++;
+          break;
+        case 3:
+          threeStarCount++;
+          break;
+        case 4:
+          fourStarCount++;
+          break;
+        case 5:
+          fiveStarCount++;
+          break;
+      }
+    });
   }
 }

@@ -1,130 +1,190 @@
-import 'package:fda/assistants/driver_data.dart';
-import 'package:fda/rider_panel/tabPages/home_tab/home_tab.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../global/global.dart';
-class EarningTabPage extends StatefulWidget {
-  const EarningTabPage({Key? key}) : super(key: key);
+class EarningTabPage extends StatelessWidget {
+    const EarningTabPage({Key? key}) : super(key: key);
 
-  @override
-  State<EarningTabPage> createState() => _EarningTabPageState();
-}
-
-class _EarningTabPageState extends State<EarningTabPage> {
-  String riderName="Rider name";
-  String userName = "your Name";
-  User? get firebaseUser => currentFirebaseUser;
-final auth=FirebaseAuth.instance;
-final ref=FirebaseDatabase.instance.ref("users");
-      var usersDetails;
-
-
- @override
-  void initState() {
-    getUserData();
-    super.initState();
-  }
-
-    getUserData() async{
-    DatabaseReference userReference = FirebaseDatabase.instance.ref("drivers").child(currentFirebaseUser!.uid);
-    DatabaseEvent usersWithOrder = await userReference.once();
-    usersDetails = usersWithOrder.snapshot.value;
-    print("UserDetails==========");
-    print(usersDetails);
-    }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar:AppBar(
-        title: Text('Earnings'),
-        leading: IconButton(icon: Icon(CupertinoIcons.back), onPressed: () {
-          Navigator.push(context,MaterialPageRoute(builder:(c)=>HomeTabPage())); },),
-
-      ),
-      body:
-      SafeArea(
+  String email = "hafiz.burhan834@gmail.com";
+  String name = "Burhan";
+  String phone = "123214124";
+  String rating ="5";
+   return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
         child: Column(
           children: [
-            ElevatedButton(
-                onPressed: (){
-                    getUserData();
-                },
-              child: const CircleAvatar(
-                radius: 50,
-                backgroundColor: Colors.black26,
-                backgroundImage: AssetImage("images/user-icon.png" ),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.3,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue.shade600, Colors.blue.shade400],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 80,
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.arrow_back, color: Colors.white),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                          Text(
+                            'Profile',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 48.0),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 16.0,
+                    right: 16.0,
+                    child: Container(
+                      height: 120,
+                      padding: EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: Colors.redAccent,
+                        borderRadius: BorderRadius.circular(16.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.shade300,
+                            blurRadius: 10.0,
+                            offset: Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 30,
+                                backgroundColor: Colors.grey.shade200,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 40,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
+                              SizedBox(width: 16.0),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    name,
+                                    style: TextStyle(
+                                      color: Colors.grey.shade700,
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 7.0),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.star,
+                                        color: Colors.yellow.shade700,
+                                        size: 16.0,
+                                      ),
+                                      SizedBox(width: 4.0),
+                                      Text(
+                                        rating.toString(),
+                                        style: TextStyle(
+                                          color: Colors.grey.shade700,
+                                          fontSize: 16.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Spacer(),
+                              GestureDetector(
+                                onTap: () {
+                                  // TODO: Implement edit profile functionality
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(8.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade200,
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: Icon(Icons.edit, color: Colors.grey.shade700),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 66.0),
+                                    // SizedBox(height: 16.0),
+                          Text(
+                            'Email',
+                            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 4.0),
+                          Text(
+                            email,
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                          SizedBox(height: 16.0),
+                          Text(
+                            'Phone',
+                            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 4.0),
+                          Text(
+                            phone,
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 10,),
-
-            Text('Rider Name Here'),
-            Divider(thickness: 1,color: Colors.black,),
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: const [
-                  Card(
-                   color: Colors.white54,
-                   margin: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                   child: ListTile(
-                   leading: Icon(
-                  Icons.person,
-                   color: Colors.black,
-                  ),
-                     title: Text('Name of Rider'),
-
-    ),
-
-                  ),
-                  const SizedBox(height: 20,),
-                  Card(
-                    color: Colors.white54,
-                    margin: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.email,
-                        color: Colors.black,
-                      ),
-                      title: Text('Email of Rider'),
-
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      child: Text('Sign Out'),
+                      onPressed: () {
+                        // TODO: Implement sign out functionality
+                      },
                     ),
-
-                  ),
-                  Card(
-                    color: Colors.white54,
-                    margin: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.bike_scooter_outlined,
-                        color: Colors.black,
-                      ),
-                      title: Text('Bike Details'),
-
-                    ),
-
-                  ),
-                 
-    ],
+                    SizedBox(height: 16.0),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
     );
+                        
   }
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty('currentFirebaseUser', currentFirebaseUser));}
 }

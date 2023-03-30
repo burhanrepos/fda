@@ -124,7 +124,7 @@ class _OrderProgressBarState extends State<OrderProgressBar> {
 DatabaseReference ref = FirebaseDatabase.instance
       .ref()
       .child("completedOrder")
-      .child(currentFirebaseUser!.uid).child('Orders').push().child('order');
+      .child(currentFirebaseUser!.uid).push();
       ref.set(userDetails['orderDetails']);
       orderRefrence.child(currentFirebaseUser!.uid).remove();
       PopupContainer.currentRiderOrderInProgress = null;

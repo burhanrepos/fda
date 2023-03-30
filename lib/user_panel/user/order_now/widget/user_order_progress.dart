@@ -1,4 +1,5 @@
 import 'package:fda/rider_panel/tabPages/home_tab/widgets/popup_container.dart';
+import 'package:fda/user_panel/user/order_now/widget/rating.dart';
 import 'package:fda/user_panel/user_mainscreen/usermain_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -15,20 +16,14 @@ class UserOrderProgress extends StatefulWidget {
 }
 
 class _UserOrderProgressState extends State<UserOrderProgress> {
-    DatabaseReference orderRefrence =
-        FirebaseDatabase.instance.ref().child("activeOrders");
-     orderCompleted(userDetails) {
-        // UserMainScreen.activeOrderDetails=;
-        userDetails['orderDetails']['received'] = true;
-        orderRefrence.child(userDetails['riderId']).set(userDetails);
-        dispose();
-        widget.updateState();
-    }
-    @override
-    dispose(){
-        super.dispose();
-        UserMainScreen.activeOrderDetails =null;
-    }
+  
+
+  @override
+  dispose() {
+    super.dispose();
+    UserMainScreen.activeOrderDetails = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scrollbar(
@@ -38,30 +33,33 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
         padding: EdgeInsets.zero,
         child: Column(
           children: [
-            Text("Order Status",style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontSize: 23),),
-
+            Text(
+              "Order Status",
+              style: TextStyle(
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 23),
+            ),
             Expanded(
               child: ListView(
-                  padding: EdgeInsets.zero,
+                padding: EdgeInsets.zero,
                 children: [
                   TimelineTile(
                     alignment: TimelineAlign.manual,
                     lineXY: 0.1,
                     isFirst: true,
                     beforeLineStyle: LineStyle(
-                        color:
-                            UserMainScreen.activeOrderDetails['orderDetails']
-                                        ['placed'] ==
-                                    true
-                                ? Colors.green
-                                : Colors.grey),
+                        color: UserMainScreen.activeOrderDetails['orderDetails']
+                                    ['placed'] ==
+                                true
+                            ? Colors.green
+                            : Colors.grey),
                     indicatorStyle: IndicatorStyle(
-                      color:
-                          UserMainScreen.activeOrderDetails['orderDetails']
-                                      ['placed'] ==
-                                  true
-                              ? Colors.green
-                              : Colors.grey,
+                      color: UserMainScreen.activeOrderDetails['orderDetails']
+                                  ['placed'] ==
+                              true
+                          ? Colors.green
+                          : Colors.grey,
                       iconStyle: IconStyle(
                         color: Colors.white,
                         iconData:
@@ -73,16 +71,15 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                       ),
                     ),
                     afterLineStyle: LineStyle(
-                        color:
-                            UserMainScreen.activeOrderDetails['orderDetails']
-                                        ['placed'] ==
-                                    true
-                                ? Colors.green
-                                : Colors.grey),
+                        color: UserMainScreen.activeOrderDetails['orderDetails']
+                                    ['placed'] ==
+                                true
+                            ? Colors.green
+                            : Colors.grey),
                     endChild: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Image.asset(
                             "images/orderPlaced.png",
@@ -91,8 +88,8 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                             height: 50,
                           ),
                           Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'Order placed',
@@ -117,19 +114,17 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                     alignment: TimelineAlign.manual,
                     lineXY: 0.1,
                     beforeLineStyle: LineStyle(
-                        color:
-                            UserMainScreen.activeOrderDetails['orderDetails']
-                                        ['accept'] ==
-                                    true
-                                ? Colors.green
-                                : Colors.grey),
+                        color: UserMainScreen.activeOrderDetails['orderDetails']
+                                    ['accept'] ==
+                                true
+                            ? Colors.green
+                            : Colors.grey),
                     indicatorStyle: IndicatorStyle(
-                      color:
-                          UserMainScreen.activeOrderDetails['orderDetails']
-                                      ['accept'] ==
-                                  true
-                              ? Colors.green
-                              : Colors.grey,
+                      color: UserMainScreen.activeOrderDetails['orderDetails']
+                                  ['accept'] ==
+                              true
+                          ? Colors.green
+                          : Colors.grey,
                       iconStyle: IconStyle(
                         color: Colors.white,
                         iconData:
@@ -141,12 +136,11 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                       ),
                     ),
                     afterLineStyle: LineStyle(
-                        color:
-                            UserMainScreen.activeOrderDetails['orderDetails']
-                                        ['accept'] ==
-                                    true
-                                ? Colors.green
-                                : Colors.grey),
+                        color: UserMainScreen.activeOrderDetails['orderDetails']
+                                    ['accept'] ==
+                                true
+                            ? Colors.green
+                            : Colors.grey),
                     endChild: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ColorFiltered(
@@ -174,22 +168,22 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Order confirmed',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                              children: [
+                                Text(
+                                  'Order confirmed',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'Your order has been confirmed.',
-                                style: TextStyle(
-                                  fontSize: 16,
+                                Text(
+                                  'Your order has been confirmed.',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -199,19 +193,17 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                     alignment: TimelineAlign.manual,
                     lineXY: 0.1,
                     beforeLineStyle: LineStyle(
-                        color:
-                            UserMainScreen.activeOrderDetails['orderDetails']
-                                        ['processed'] ==
-                                    true
-                                ? Colors.green
-                                : Colors.grey),
+                        color: UserMainScreen.activeOrderDetails['orderDetails']
+                                    ['processed'] ==
+                                true
+                            ? Colors.green
+                            : Colors.grey),
                     indicatorStyle: IndicatorStyle(
-                      color:
-                          UserMainScreen.activeOrderDetails['orderDetails']
-                                      ['processed'] ==
-                                  true
-                              ? Colors.green
-                              : Colors.grey,
+                      color: UserMainScreen.activeOrderDetails['orderDetails']
+                                  ['processed'] ==
+                              true
+                          ? Colors.green
+                          : Colors.grey,
                       iconStyle: IconStyle(
                         color: Colors.white,
                         iconData:
@@ -223,12 +215,11 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                       ),
                     ),
                     afterLineStyle: LineStyle(
-                        color:
-                            UserMainScreen.activeOrderDetails['orderDetails']
-                                        ['processed'] ==
-                                    true
-                                ? Colors.green
-                                : Colors.grey),
+                        color: UserMainScreen.activeOrderDetails['orderDetails']
+                                    ['processed'] ==
+                                true
+                            ? Colors.green
+                            : Colors.grey),
                     endChild: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ColorFiltered(
@@ -256,22 +247,22 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Order processed',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                              children: [
+                                Text(
+                                  'Order processed',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'We are preparing your order',
-                                style: TextStyle(
-                                  fontSize: 16,
+                                Text(
+                                  'We are preparing your order',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -282,19 +273,17 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                     lineXY: 0.1,
                     isLast: true,
                     beforeLineStyle: LineStyle(
-                        color:
-                            UserMainScreen.activeOrderDetails['orderDetails']
-                                        ['delivered'] ==
-                                    true
-                                ? Colors.green
-                                : Colors.grey),
+                        color: UserMainScreen.activeOrderDetails['orderDetails']
+                                    ['delivered'] ==
+                                true
+                            ? Colors.green
+                            : Colors.grey),
                     indicatorStyle: IndicatorStyle(
-                      color:
-                          UserMainScreen.activeOrderDetails['orderDetails']
-                                      ['delivered'] ==
-                                  true
-                              ? Colors.green
-                              : Colors.grey,
+                      color: UserMainScreen.activeOrderDetails['orderDetails']
+                                  ['delivered'] ==
+                              true
+                          ? Colors.green
+                          : Colors.grey,
                       iconStyle: IconStyle(
                         color: Colors.white,
                         iconData:
@@ -333,40 +322,49 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Ready to pickup',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                              children: [
+                                Text(
+                                  'Ready to pickup',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'Your order is ready for pickup',
-                                style: TextStyle(
-                                  fontSize: 16,
+                                Text(
+                                  'Your order is ready for pickup',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                              UserMainScreen.activeOrderDetails['orderDetails']
-                                  ['completed'] ==
-                              true 
-                          ?ElevatedButton(onPressed: (){
-                              orderCompleted(UserMainScreen.activeOrderDetails);
-                          }, child: Text(
-                          'Order Received',
-                          style: TextStyle(
-                            fontSize: 16,
-                            
-                          ),
-                        ),):Container()
-                            ],
-                          ),
+                                UserMainScreen.activeOrderDetails[
+                                            'orderDetails']['completed'] ==
+                                        true
+                                    ? ElevatedButton(
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return UserRating(updateState: widget.updateState);
+                                            },
+                                          );
+
+                                        },
+                                        child: Text(
+                                          'Order Received',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      )
+                                    : Container()
+                              ],
+                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
-                // Do you recieved your order
+                  // Do you recieved your order
                 ],
               ),
             ),
