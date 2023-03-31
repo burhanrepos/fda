@@ -90,9 +90,13 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
                         children: [
                           SizedBox(height: 20.0),
                           _buildRatingBar(5, fiveStarCount),
+                          SizedBox(height: 20.0),
                           _buildRatingBar(4, fourStarCount),
+                          SizedBox(height: 20.0),
                           _buildRatingBar(3, threeStarCount),
+                          SizedBox(height: 20.0),
                           _buildRatingBar(2, twoStarCount),
+                          SizedBox(height: 20.0),
                           _buildRatingBar(1, oneStarCount),
                           SizedBox(height: 20.0),
                           SizedBox(height: 20.0),
@@ -191,7 +195,7 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
+                    padding: const EdgeInsets.only(left: 10.0),
                     child: Text(
                       '$count',
                       style: TextStyle(

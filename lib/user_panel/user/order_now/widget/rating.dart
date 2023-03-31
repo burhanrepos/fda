@@ -26,9 +26,79 @@ class _UserRatingState extends State<UserRating> {
   }
 
   void _submitRating() {
+    addEarningOfRider(UserMainScreen.activeOrderDetails);
     updateTheRatingInUser(UserMainScreen.activeOrderDetails);
     orderCompleted(UserMainScreen.activeOrderDetails);
     Navigator.pop(context);
+  }
+
+  void addEarningOfRider(activeOrderDetails) async {
+    String orderDate = activeOrderDetails['orderDetails']['orderDate'];
+    String price = activeOrderDetails['orderDetails']['Price'].toString();
+    int orderMonth = int.parse(orderDate.substring(0, 2));
+    int orderDateInMonth = int.parse(orderDate.substring(3, 5));
+    int orderYear = int.parse(orderDate.substring(6));
+
+    Map tempEarningArray = {
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0
+    };
+    DatabaseReference? ref = FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(currentFirebaseUser!.uid);
+    // Get the data once
+    DatabaseEvent yearlyEarning =
+        await ref.child("yearlyEarning").child(orderYear.toString()).once();
+    var earningDetails = yearlyEarning.snapshot.value;
+    if (earningDetails == null) {
+      for (String key in tempEarningArray.keys) {
+        if (int.parse(key) == orderMonth) {
+          tempEarningArray[key] =
+              tempEarningArray[key] + (int.parse(price) + 250);
+        }
+      }
+      var totalEarning = 0;
+      for (int value in tempEarningArray.values) {
+        totalEarning += value;
+      }
+      ref
+          .child("yearlyEarning")
+          .child(orderYear.toString())
+          .set(tempEarningArray);
+      ref.child("totalEarning").set(totalEarning);
+    } else {
+      var earningList = [...(earningDetails as List<Object?>)];
+      earningList.removeAt(0);
+      tempEarningArray.clear();
+      for (var index = 0; index < earningList.length; index++) {
+        tempEarningArray[index + 1] = earningList[index];
+        if (index + 1 == orderMonth) {
+          tempEarningArray[index + 1] =
+              int.parse(earningList[index].toString()) +
+                  (int.parse(price) + 250);
+        }
+      }
+      var totalEarning = 0;
+      for (int value in tempEarningArray.values) {
+        totalEarning += value;
+      }
+      ref
+          .child("yearlyEarning")
+          .child(orderYear.toString())
+          .set(tempEarningArray);
+      ref.child("totalEarning").set(totalEarning);
+    }
   }
 
   updateTheRatingInUser(userDetails) async {
@@ -85,13 +155,19 @@ class _UserRatingState extends State<UserRating> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-        titlePadding: EdgeInsets.zero,
+      titlePadding: EdgeInsets.zero,
       title: Center(
-        child: Text('Rate this order',style: TextStyle(fontSize: 26,fontWeight: FontWeight.w500),)),
+          child: Text(
+        'Rate this order',
+        style: TextStyle(fontSize: 26, fontWeight: FontWeight.w500),
+      )),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text('How would you rate your experience with this rider?',style: TextStyle(fontSize: 14),),
+          Text(
+            'How would you rate your experience with this rider?',
+            style: TextStyle(fontSize: 14),
+          ),
           SizedBox(height: 18.0),
           RatingBar.builder(
             initialRating: _rating,
@@ -116,7 +192,8 @@ class _UserRatingState extends State<UserRating> {
         TextButton(
           child: Text(
             'Submit',
-            style: TextStyle(color: _rating == 0 ? Colors.grey : Colors.green,fontSize: 16),
+            style: TextStyle(
+                color: _rating == 0 ? Colors.grey : Colors.green, fontSize: 16),
           ),
           onPressed: () {
             color:
