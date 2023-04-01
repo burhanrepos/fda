@@ -15,7 +15,7 @@ class EarningTabPage extends StatefulWidget {
 
 class _EarningTabPageState extends State<EarningTabPage> {
      double _totalEarning =0;
-    List earningList = [];
+    List earningList = [0,0,0,0,0,0,0,0,0,0,0,0];
   @override
   initState() {
     getEarningData();
@@ -46,8 +46,10 @@ class _EarningTabPageState extends State<EarningTabPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Earnings'),
+        title: Center(child: Text('Earnings')),
+        automaticallyImplyLeading: false,
       ),
+
       body: 
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -65,7 +67,7 @@ class _EarningTabPageState extends State<EarningTabPage> {
             Expanded(child: Container(
         width: double.infinity,
         height: 300,
-        child: earningList.length>0?LineChart(
+        child: LineChart(
           LineChartData(
               titlesData: FlTitlesData(
                   topTitles: AxisTitles(
@@ -88,10 +90,7 @@ class _EarningTabPageState extends State<EarningTabPage> {
                   FlSpot(12, double.parse(earningList[11].toString())??0)
                 ])
               ]),
-        ):SpinKitPulse(
-                            color: Colors.black,
-                            size: 50.0,
-                          )
+        )
       ),),
            Text(
               'Earnings History',

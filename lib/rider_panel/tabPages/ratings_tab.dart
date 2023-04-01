@@ -54,7 +54,8 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Rating'),
+         title: Center(child: Text('Ratings')),
+        automaticallyImplyLeading: false,
       ),
       body: Container(
         child: SafeArea(

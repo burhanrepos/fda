@@ -1,9 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:fda/global/global.dart';
 import 'package:fda/splashScreen/splash_screen.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-
-
-import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ProfileTabPage extends StatefulWidget {
     const ProfileTabPage({Key? key}) : super(key: key);
@@ -13,188 +13,275 @@ class ProfileTabPage extends StatefulWidget {
 }
 
 class _ProfileTabPageState extends State<ProfileTabPage> {
-  @override
+    var driverDetails ;
+    bool loader = false;
+  String _rating = '0.0';
+    
+     @override
+  initState() {
+    getEarningData();
+  }
+
+  getEarningData() async {
+    loader=true;
+    DatabaseReference? ref = FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(currentFirebaseUser!.uid);
+    DatabaseEvent driverDetailEvent =await  ref.once();
+    DatabaseEvent overallRating = await ref.child("totalRating").once();
+        var overAllRatingValue = overallRating.snapshot.value;
+        if(overAllRatingValue != null){
+            _rating = double.parse(overAllRatingValue.toString()).toStringAsFixed(1);
+        }
+    // Get the data once
+    driverDetails = driverDetailEvent.snapshot.value ;
+    print("Driver Details");
+    print(driverDetails);
+    setState(() {
+      
+    loader = false;
+    });
+  }
+   @override
   Widget build(BuildContext context) {
-  String email = "hafiz.burhan834@gmail.com";
-  String name = "Burhan";
-  String phone = "123214124";
-  String rating ="5";
-   return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+    return Scaffold(
+        appBar: AppBar(
+         title: Center(child: Text('Profile')),
+        automaticallyImplyLeading: false,
+      ),
+      backgroundColor: Colors.grey[200],
+      body: loader?SpinKitPulse(
+                            color: Colors.black,
+                            size: 50.0,
+                          ):SafeArea(
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.3,
+              height: 180,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue.shade600, Colors.blue.shade400],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
                 ),
               ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 80,
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          Text(
-                            'Profile',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(width: 48.0),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 16.0,
-                    right: 16.0,
-                    child: Container(
-                      height: 120,
-                      padding: EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: Colors.redAccent,
-                        borderRadius: BorderRadius.circular(16.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.shade300,
-                            blurRadius: 10.0,
-                            offset: Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 30,
-                                backgroundColor: Colors.grey.shade200,
-                                child: Icon(
-                                  Icons.person,
-                                  size: 40,
-                                  color: Colors.grey.shade700,
-                                ),
-                              ),
-                              SizedBox(width: 16.0),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    name,
-                                    style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 7.0),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.star,
-                                        color: Colors.yellow.shade700,
-                                        size: 16.0,
-                                      ),
-                                      SizedBox(width: 4.0),
-                                      Text(
-                                        rating.toString(),
-                                        style: TextStyle(
-                                          color: Colors.grey.shade700,
-                                          fontSize: 16.0,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              Spacer(),
-                              GestureDetector(
-                                onTap: () {
-                                  // TODO: Implement edit profile functionality
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.all(8.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade200,
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  child: Icon(Icons.edit, color: Colors.grey.shade700),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 66.0),
-                                    // SizedBox(height: 16.0),
-                          Text(
-                            'Email',
-                            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 4.0),
-                          Text(
-                            email,
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                          SizedBox(height: 16.0),
-                          Text(
-                            'Phone',
-                            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 4.0),
-                          Text(
-                            phone,
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      child: Text('Sign Out'),
-                      onPressed: () {
-                        fAuth.signOut();
-          Navigator.push(context, MaterialPageRoute(builder: (c)=> const MySplashScreen()));
-                      },
+                    Text(
+                      'Driver Profile',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
-                    SizedBox(height: 16.0),
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundImage: NetworkImage(
+                              'https://randomuser.me/api/portraits/men/72.jpg'),
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${driverDetails['name']??'-'}',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'Rating: ${_rating}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ],
                 ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Personal Information',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Email',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        Text(
+                          '${driverDetails?['email']}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Phone',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        Text(
+                          '${driverDetails?['phone']}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      'Vehicle Information',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                                        SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Make',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        Text(
+                          '${driverDetails?['bike_details']?['bike_make']??'-'}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Model',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        Text(
+                          '${driverDetails?['bike_details']?['bike_model']??'-'}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'License Plate',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        Text(
+                          '${driverDetails?['bike_details']?['bike_number']??'-'}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    child: Text('Sign Out'),
+                    style: ElevatedButton.styleFrom(
+                        primary: Color.fromARGB(250, 42, 40, 40),
+                      ),
+                    onPressed: () {
+                      fAuth.signOut();
+          Navigator.push(context, MaterialPageRoute(builder: (c)=> const MySplashScreen()));
+                    },
+                  ),
+                  SizedBox(height: 16.0),
+                ],
               ),
             ),
           ],
         ),
       ),
     );
-                        
   }
 }

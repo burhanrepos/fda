@@ -56,7 +56,7 @@ class _UserRatingState extends State<UserRating> {
     DatabaseReference? ref = FirebaseDatabase.instance
         .ref()
         .child("drivers")
-        .child(currentFirebaseUser!.uid);
+        .child(activeOrderDetails['orderDetails']['riderId']);
     // Get the data once
     DatabaseEvent yearlyEarning =
         await ref.child("yearlyEarning").child(orderYear.toString()).once();
@@ -106,7 +106,7 @@ class _UserRatingState extends State<UserRating> {
     DatabaseReference? ref = FirebaseDatabase.instance
         .ref()
         .child("drivers")
-        .child(currentFirebaseUser!.uid);
+        .child(userDetails['orderDetails']['riderId']);
     // Get the data once
     DatabaseEvent usersWithOrder = await ref.child("rating").once();
     var ratingDetail = usersWithOrder.snapshot.value;
