@@ -12,6 +12,8 @@ import 'package:provider/provider.dart';
 import '../../../global/global.dart';
 import 'package:intl/intl.dart';
 
+import '../../../widgets/constants.dart';
+
 
 class OrderNow extends StatefulWidget {
   const OrderNow({Key? key}) : super(key: key);
@@ -38,7 +40,7 @@ List dropDownValues = [
     {
         "fuel":"Hi-Octane",
         "price":350,
-        "color":Colors.green
+        "color":Constants.applicationThemeColor
     },
     {
         "fuel":"Diesel",
@@ -305,8 +307,8 @@ void dispose() {
           itemCount: dropDownValues.length,
           itemBuilder: (BuildContext context, int index) {
             return Container(
-              margin: EdgeInsets.symmetric(horizontal: 8.0),
-              width: 100.0,
+              margin: EdgeInsets.symmetric(horizontal: 6.0),
+              width: 93.0,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16.0),

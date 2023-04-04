@@ -1,20 +1,21 @@
 
 
 
+import 'package:fda/widgets/constants.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import '../../global/global.dart';
 
-class RatingsTabPage extends StatefulWidget {
-  const RatingsTabPage({Key? key}) : super(key: key);
+class RiderRatingsTabPage extends StatefulWidget {
+  const RiderRatingsTabPage({Key? key}) : super(key: key);
 
   @override
-  _RatingsTabPageState createState() => _RatingsTabPageState();
+  _RiderRatingsTabPageState createState() => _RiderRatingsTabPageState();
 }
 
-class _RatingsTabPageState extends State<RatingsTabPage> {
+class _RiderRatingsTabPageState extends State<RiderRatingsTabPage> {
   int oneStarCount = 0;
   int twoStarCount = 0;
   int threeStarCount = 0;
@@ -74,7 +75,7 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
                         style: TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
-                          color: Colors.green[800],
+                          color: Constants.applicationThemeColor,
                         ),
                       ),
                     ),
@@ -112,7 +113,7 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
                                   style: TextStyle(
                                     fontSize: 20.0,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.green[800],
+                                    color: Constants.applicationThemeColor,
                                   ),
                                 ),
                               ),
@@ -128,7 +129,7 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
                                     EdgeInsets.symmetric(horizontal: 2.0),
                                 itemBuilder: (context, _) => Icon(
                                   Icons.star,
-                                  color: Colors.amber,
+                                  color: Constants.applicationThemeColor,
                                 ),
                                 onRatingUpdate: (rating) {},
                               ),
@@ -162,7 +163,7 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
                 ),
                 Icon(
                   Icons.star,
-                  color: Colors.amber,
+                  color: Constants.applicationThemeColor,
                 ),
               ],
             ),
@@ -186,9 +187,9 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
                   alignment: Alignment.centerLeft,
                   child: Container(
                     height: 30.0,
-                    width: 10.0 * count.toDouble(),
+                    width: 20.0 * count.toDouble(),
                     decoration: BoxDecoration(
-                      color: Colors.amber,
+                      color: Constants.applicationThemeColor,
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
@@ -196,12 +197,12 @@ class _RatingsTabPageState extends State<RatingsTabPage> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
+                    padding: const EdgeInsets.only(left: 12.0),
                     child: Text(
                       '$count',
                       style: TextStyle(
                         fontSize: 18.0,
-                        color: Colors.grey[700],
+                        color:  count==0?Constants.applicationThemeColor:Constants.applicationThemeWhiteColor,
                       ),
                     ),
                   ),

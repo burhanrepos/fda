@@ -1,4 +1,5 @@
 import 'package:fda/rider_panel/tabPages/home_tab/widgets/popup_container.dart';
+import 'package:fda/widgets/constants.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -34,165 +35,149 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
               fontSize: 30,
               fontWeight: FontWeight.bold,
               fontFamily: "Montserrat"),
-          title: Text('Order Details'),
+          title: Text(
+            'Order Details',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: EdgeInsets.all(5.0),
-                margin: EdgeInsets.all(2.5),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Name',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[600],
                     ),
-                  ],
-                ),
-                child: Text(
-                  'Name: ${userDetails['name'].toString()}',
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.green,
-                    letterSpacing: 1.0,
                   ),
-                ),
-              ),
-              SizedBox(height: 8.0),
-              Container(
-                padding: EdgeInsets.all(5.0),
-                margin: EdgeInsets.all(2.5),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
+                  Text(
+                    '${userDetails['name'].toString()}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
                     ),
-                  ],
-                ),
-                child: Text(
-                  'Phone: ${userDetails['phone'].toString()}',
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.orangeAccent,
-                    letterSpacing: 1.0,
                   ),
-                ),
+                ],
               ),
-              //   Text('Phone: ${userDetails['phone'].toString()}'),
-              userDetails['orderDetails'] != null
-                  ? SizedBox(height: 8.0)
-                  : SizedBox(),
-              userDetails['orderDetails'] != null
-                  ? Container(
-                      padding: EdgeInsets.all(5.0),
-                      margin: EdgeInsets.all(2.5),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Text(
-                        'Fuel: ${userDetails['orderDetails']['Fuel'].toString()}',
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                          color: Colors.redAccent,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                    )
-                  //   Text(
-                  //       'Fuel: ${userDetails['orderDetails']['Fuel'].toString()}')
-                  : SizedBox(),
-              userDetails['orderDetails'] != null
-                  ? SizedBox(height: 8.0)
-                  : SizedBox(),
-              userDetails['orderDetails'] != null
-                  ? Container(
-                      padding: EdgeInsets.all(5.0),
-                      margin: EdgeInsets.all(2.5),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Text(
-                        "Liter: ${userDetails['orderDetails']['Liter'].toString()}",
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                          color: Colors.blue,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                    )
-
-                  //   Text(
-                  //                   'Liter: ${userDetails['orderDetails']['Liter'].toString()}')
-                  : SizedBox(),
-              userDetails['orderDetails'] != null
-                  ? SizedBox(height: 8.0)
-                  : SizedBox(),
-              userDetails['orderDetails'] != null
-                  ? Container(
-                      padding: EdgeInsets.all(5.0),
-                      margin: EdgeInsets.all(2.5),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Text(
-                        'Price: ${userDetails['orderDetails']['Price'].toString()}',
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                          color: Colors.purpleAccent,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                    )
-                  // Text(
-                  //     'Price: ${userDetails['orderDetails']['Price'].toString()}')
-                  : SizedBox(),
+              Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Phone',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  Text(
+                    '${userDetails['phone'].toString()}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Fuel',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  Text(
+                    '${userDetails['orderDetails']['Fuel'].toString()}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Liter',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  Text(
+                    '${userDetails['orderDetails']['Liter'].toString()}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Price',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  Text(
+                    '${userDetails['orderDetails']['Price'].toString()}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Delivery Charges',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  Text(
+                    '200',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
           actions: [
@@ -204,7 +189,7 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
                   widget.updateState();
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.green,
+                  primary: Constants.applicationThemeColor,
                   padding: const EdgeInsets.symmetric(horizontal: 18),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(26),
@@ -230,44 +215,47 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
   }
 
   drawPoliline(context, userDetails) {
-    HomeTabPage.destinationLocation = LatLng(
+    RiderHomeTabPage.destinationLocation = LatLng(
         userDetails['orderDetails']['latitude'],
         userDetails['orderDetails']['longitude']);
-    print("Destination =======${HomeTabPage.destinationLocation}");
-    print("Source =======${HomeTabPage.sourceLocation}");
-    HomeTabPage.markers.add(
+    print("Destination =======${RiderHomeTabPage.destinationLocation}");
+    print("Source =======${RiderHomeTabPage.sourceLocation}");
+    RiderHomeTabPage.markers.add(
       Marker(
         markerId: MarkerId("source"),
-        position: HomeTabPage.sourceLocation,
+        position: RiderHomeTabPage.sourceLocation,
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         infoWindow: InfoWindow(
           title: "Source",
         ),
       ),
     );
-    HomeTabPage.markers.add(
+    RiderHomeTabPage.markers.add(
       Marker(
         markerId: MarkerId("destination"),
-        position: HomeTabPage.destinationLocation,
+        position: RiderHomeTabPage.destinationLocation,
         infoWindow: InfoWindow(
           title: "Destination",
         ),
       ),
     );
-    HomeTabPage.polyline.add(Polyline(
+    RiderHomeTabPage.polyline.add(Polyline(
       polylineId: PolylineId("route1"),
       visible: true,
       width: 10,
       color: Colors.blueAccent,
       endCap: Cap.buttCap,
-      points: [HomeTabPage.sourceLocation, HomeTabPage.destinationLocation],
+      points: [
+        RiderHomeTabPage.sourceLocation,
+        RiderHomeTabPage.destinationLocation
+      ],
     ));
     print('HOME PAGE REFERENCE');
     Navigator.of(context).pop();
   }
 
   addOrderToActiveOrders(userDetails) {
-    userDetails['riderId']= currentFirebaseUser!.uid;
+    userDetails['riderId'] = currentFirebaseUser!.uid;
     userDetails['orderDetails']['placed'] = true;
     userDetails['orderDetails']['accept'] = true;
     userDetails['orderDetails']['processed'] = false;
@@ -282,67 +270,147 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
     DatabaseReference orderRefrence =
         FirebaseDatabase.instance.ref().child("activeOrders");
     orderRefrence.child(currentFirebaseUser!.uid).set(userDetails);
-
-
   }
-  removeOrderFromUser(userDetails){
-        print("User Details runtime type ==");
-    Map<Object?, Object?> userForRemovalOrder = {...userDetails}; // The original Map that you want to clone
+
+  removeOrderFromUser(userDetails) {
+    print("User Details runtime type ==");
+    Map<Object?, Object?> userForRemovalOrder = {
+      ...userDetails
+    }; // The original Map that you want to clone
     userForRemovalOrder.remove('orderDetails');
     DatabaseReference removeOrderReference =
-        FirebaseDatabase.instance.ref().child("users")
-        .child(userDetails['id']);
-          // removeOrderReference.set(userForRemovalOrder);
+        FirebaseDatabase.instance.ref().child("users").child(userDetails['id']);
+    // removeOrderReference.set(userForRemovalOrder);
     print("User Details runtime type After==");
   }
 
   @override
   Widget build(BuildContext context) {
-    List usersRequest = HomeTabPage.allUser;
+    List usersRequest = RiderHomeTabPage.allUser;
 
     return Container(
       alignment: Alignment.topCenter,
       padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
-      child: HomeTabPage.allUser.length>0?Expanded(
-          child: ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: usersRequest.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
+      child: RiderHomeTabPage.allUser.length > 0
+          ? Expanded(
+              child: ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: usersRequest.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CircleAvatar(
-                            radius: 30.0,
-                            backgroundColor: Colors.transparent,
-                            backgroundImage:
-                                AssetImage('images/profile_icon.png')
-                                    as ImageProvider),
-                        SizedBox(width: 10.0),
-                        Text(
-                          usersRequest[index]['name'].toString(),
-                          style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                          //   softWrap: true,
+                        Row(
+                          children: [
+                            CircleAvatar(
+                                radius: 30.0,
+                                backgroundColor: Colors.transparent,
+                                backgroundImage:
+                                    AssetImage('images/profile_icon.png')
+                                        as ImageProvider),
+                            SizedBox(width: 10.0),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  usersRequest[index]['name'].toString(),
+                                  style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
+                                  //   softWrap: true,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.only(
+                                          left: 5, right: 5, top: 2, bottom: 2),
+                                      decoration: BoxDecoration(
+                                        color: Constants.applicationThemeColor,
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                      ),
+                                      child: Text(
+                                        usersRequest[index]['orderDetails']
+                                                ['Fuel']
+                                            .toString(),
+                                        style: TextStyle(
+                                            fontSize: 12.0,
+                                            color: Constants
+                                                .applicationThemeWhiteColor,
+                                            backgroundColor: Constants
+                                                .applicationThemeColor),
+                                        //   softWrap: true,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.only(
+                                          left: 5, right: 5, top: 2, bottom: 2),
+                                      decoration: BoxDecoration(
+                                        color: Constants.applicationThemeColor,
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                      ),
+                                      child: Text(
+                                        usersRequest[index]['orderDetails']
+                                                ['Liter']
+                                            .toString(),
+                                        style: TextStyle(
+                                            fontSize: 12.0,
+                                            color: Constants
+                                                .applicationThemeWhiteColor),
+                                        //   softWrap: true,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            SizedBox(width: 10.0),
+                          ],
                         ),
-                        SizedBox(width: 10.0),
+                        ElevatedButton(
+                          onPressed: () {
+                            displayUserDetails(context, usersRequest[index]);
+                          },
+                          child: Text('Order details'),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.all(5),
+                            primary: Constants.applicationThemeColor,
+                          ),
+                        ),
                       ],
+                    );
+                  }))
+          : Container(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Icon(
+                      Icons.remove_shopping_cart_rounded,
+                      size: 60,
+                      color: Colors.grey.shade500,
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        displayUserDetails(context, usersRequest[index]);
-                      },
-                      child: Text('Order details'),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.green,
+                    Text(
+                      'No Order available',
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
-                );
-              })):Container(child: Text("No order available",style: TextStyle(fontWeight: FontWeight.bold),),),
+                ),
+              ),
+            ),
       height: MediaQuery.of(context).size.height * 0.3,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.only(

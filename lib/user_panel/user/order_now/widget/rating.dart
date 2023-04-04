@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import '../../../../global/global.dart';
+import '../../../../widgets/constants.dart';
 import '../../../user_mainscreen/usermain_screen.dart';
 
 class UserRating extends StatefulWidget {
@@ -178,7 +179,7 @@ class _UserRatingState extends State<UserRating> {
             itemPadding: EdgeInsets.symmetric(horizontal: 1.0),
             itemBuilder: (context, _) => Icon(
               Icons.star,
-              color: Colors.amber,
+              color: Constants.applicationThemeColor,
             ),
             onRatingUpdate: (rating) {
               setState(() {
@@ -193,7 +194,7 @@ class _UserRatingState extends State<UserRating> {
           child: Text(
             'Submit',
             style: TextStyle(
-                color: _rating == 0 ? Colors.grey : Colors.green, fontSize: 16),
+                color: _rating == 0 ? Colors.grey : Constants.applicationThemeColor, fontSize: 16),
           ),
           onPressed: () {
             color:

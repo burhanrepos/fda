@@ -1,3 +1,4 @@
+import 'package:fda/widgets/constants.dart';
 import 'package:flutter/material.dart';
 
 class ProgressDialog extends StatelessWidget {
@@ -21,8 +22,8 @@ class ProgressDialog extends StatelessWidget {
             children: [
               const SizedBox(width: 6.0,),
 
-             const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Constants.applicationThemeColor),
 
               ),
               const SizedBox(width: 26.0,),

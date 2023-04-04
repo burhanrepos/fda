@@ -1,10 +1,27 @@
 import 'package:fda/splashScreen/splash_screen.dart';
+import 'package:fda/widgets/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  Color darkColor = Constants.applicationThemeColor;
+MaterialColor primaryColor = MaterialColor(
+  darkColor.value,
+  <int, Color>{
+    50: darkColor.withOpacity(0.1),
+    100: darkColor.withOpacity(0.2),
+    200: darkColor.withOpacity(0.3),
+    300: darkColor.withOpacity(0.4),
+    400: darkColor.withOpacity(0.5),
+    500: darkColor.withOpacity(0.6),
+    600: darkColor.withOpacity(0.7),
+    700: darkColor.withOpacity(0.8),
+    800: darkColor.withOpacity(0.9),
+    900: darkColor.withOpacity(1.0),
+  },
+);
 
 
   runApp(
@@ -13,7 +30,7 @@ void main() async {
         title: 'Fuel Deliver APP',
         theme: ThemeData(
             fontFamily: "Poppins",
-          primarySwatch: Colors.green,
+          primarySwatch: primaryColor,
         ),
         home: const MySplashScreen(),
         debugShowCheckedModeBanner: false,

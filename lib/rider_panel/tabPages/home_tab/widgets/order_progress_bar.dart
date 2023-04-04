@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fda/rider_panel/tabPages/home_tab/widgets/popup_container.dart';
+import 'package:fda/widgets/constants.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -49,37 +50,37 @@ class _OrderProgressBarState extends State<OrderProgressBar> {
   }
 
     drawPoliline(userDetails) {
-    HomeTabPage.destinationLocation = LatLng(
+    RiderHomeTabPage.destinationLocation = LatLng(
         userDetails['orderDetails']['latitude'],
         userDetails['orderDetails']['longitude']);
-    print("Destination =======${HomeTabPage.destinationLocation}");
-    print("Source =======${HomeTabPage.sourceLocation}");
-    HomeTabPage.markers.add(
+    print("Destination =======${RiderHomeTabPage.destinationLocation}");
+    print("Source =======${RiderHomeTabPage.sourceLocation}");
+    RiderHomeTabPage.markers.add(
       Marker(
         markerId: MarkerId("source"),
-        position: HomeTabPage.sourceLocation,
+        position: RiderHomeTabPage.sourceLocation,
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         infoWindow: InfoWindow(
           title: "Source",
         ),
       ),
     );
-    HomeTabPage.markers.add(
+    RiderHomeTabPage.markers.add(
       Marker(
         markerId: MarkerId("destination"),
-        position: HomeTabPage.destinationLocation,
+        position: RiderHomeTabPage.destinationLocation,
         infoWindow: InfoWindow(
           title: "Destination",
         ),
       ),
     );
-    HomeTabPage.polyline.add(Polyline(
+    RiderHomeTabPage.polyline.add(Polyline(
       polylineId: PolylineId("route1"),
       visible: true,
       width: 10,
       color: Colors.blueAccent,
       endCap: Cap.buttCap,
-      points: [HomeTabPage.sourceLocation, HomeTabPage.destinationLocation],
+      points: [RiderHomeTabPage.sourceLocation, RiderHomeTabPage.destinationLocation],
     ));
     print('HOME PAGE REFERENCE');
     widget.updateState();
@@ -129,8 +130,8 @@ DatabaseReference ref = FirebaseDatabase.instance
       orderRefrence.child(currentFirebaseUser!.uid).remove();
       PopupContainer.currentRiderOrderInProgress = null;
       PopupContainer.driverWithActiveOrder = false;
-      HomeTabPage.markers.clear();
-      HomeTabPage.polyline.clear();
+      RiderHomeTabPage.markers.clear();
+      RiderHomeTabPage.polyline.clear();
       widget.updateState();
   }
   @override
@@ -169,14 +170,14 @@ DatabaseReference ref = FirebaseDatabase.instance
                       PopupContainer.currentRiderOrderInProgress['orderDetails']
                                   ['placed'] ==
                               true
-                          ? Colors.green
+                          ? Constants.applicationThemeColor
                           : Colors.grey),
               indicatorStyle: IndicatorStyle(
                 color:
                     PopupContainer.currentRiderOrderInProgress['orderDetails']
                                 ['placed'] ==
                             true
-                        ? Colors.green
+                        ? Constants.applicationThemeColor
                         : Colors.grey,
                 iconStyle: IconStyle(
                   color: Colors.white,
@@ -193,7 +194,7 @@ DatabaseReference ref = FirebaseDatabase.instance
                       PopupContainer.currentRiderOrderInProgress['orderDetails']
                                   ['placed'] ==
                               true
-                          ? Colors.green
+                          ? Constants.applicationThemeColor
                           : Colors.grey),
               endChild: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -237,14 +238,14 @@ DatabaseReference ref = FirebaseDatabase.instance
                       PopupContainer.currentRiderOrderInProgress['orderDetails']
                                   ['accept'] ==
                               true
-                          ? Colors.green
+                          ? Constants.applicationThemeColor
                           : Colors.grey),
               indicatorStyle: IndicatorStyle(
                 color:
                     PopupContainer.currentRiderOrderInProgress['orderDetails']
                                 ['accept'] ==
                             true
-                        ? Colors.green
+                        ? Constants.applicationThemeColor
                         : Colors.grey,
                 iconStyle: IconStyle(
                   color: Colors.white,
@@ -261,7 +262,7 @@ DatabaseReference ref = FirebaseDatabase.instance
                       PopupContainer.currentRiderOrderInProgress['orderDetails']
                                   ['accept'] ==
                               true
-                          ? Colors.green
+                          ? Constants.applicationThemeColor
                           : Colors.grey),
               endChild: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -332,14 +333,14 @@ DatabaseReference ref = FirebaseDatabase.instance
                       PopupContainer.currentRiderOrderInProgress['orderDetails']
                                   ['processed'] ==
                               true
-                          ? Colors.green
+                          ? Constants.applicationThemeColor
                           : Colors.grey),
               indicatorStyle: IndicatorStyle(
                 color:
                     PopupContainer.currentRiderOrderInProgress['orderDetails']
                                 ['processed'] ==
                             true
-                        ? Colors.green
+                        ? Constants.applicationThemeColor
                         : Colors.grey,
                 iconStyle: IconStyle(
                   color: Colors.white,
@@ -356,7 +357,7 @@ DatabaseReference ref = FirebaseDatabase.instance
                       PopupContainer.currentRiderOrderInProgress['orderDetails']
                                   ['processed'] ==
                               true
-                          ? Colors.green
+                          ? Constants.applicationThemeColor
                           : Colors.grey),
               endChild: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -428,14 +429,14 @@ DatabaseReference ref = FirebaseDatabase.instance
                       PopupContainer.currentRiderOrderInProgress['orderDetails']
                                   ['delivered'] ==
                               true
-                          ? Colors.green
+                          ? Constants.applicationThemeColor
                           : Colors.grey),
               indicatorStyle: IndicatorStyle(
                 color:
                     PopupContainer.currentRiderOrderInProgress['orderDetails']
                                 ['delivered'] ==
                             true
-                        ? Colors.green
+                        ? Constants.applicationThemeColor
                         : Colors.grey,
                 iconStyle: IconStyle(
                   color: Colors.white,
@@ -447,7 +448,7 @@ DatabaseReference ref = FirebaseDatabase.instance
                           : Icons.delivery_dining,
                 ),
               ),
-              //   afterLineStyle: LineStyle(color: PopupContainer.currentRiderOrderInProgress['orderDetails']['delivered']==true?Colors.green:Colors.grey),
+              //   afterLineStyle: LineStyle(color: PopupContainer.currentRiderOrderInProgress['orderDetails']['delivered']==true?Constants.applicationThemeColor:Colors.grey),
               endChild: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ColorFiltered(

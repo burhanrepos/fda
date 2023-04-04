@@ -5,15 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../../../global/global.dart';
+import '../../../widgets/constants.dart';
 
-class EarningTabPage extends StatefulWidget {
-    const EarningTabPage({Key? key}) : super(key: key);
+class RiderEarningTabPage extends StatefulWidget {
+    const RiderEarningTabPage({Key? key}) : super(key: key);
 
   @override
-  State<EarningTabPage> createState() => _EarningTabPageState();
+  State<RiderEarningTabPage> createState() => _RiderEarningTabPageState();
 }
 
-class _EarningTabPageState extends State<EarningTabPage> {
+class _RiderEarningTabPageState extends State<RiderEarningTabPage> {
      double _totalEarning =0;
     List earningList = [0,0,0,0,0,0,0,0,0,0,0,0];
   @override
@@ -42,6 +43,16 @@ class _EarningTabPageState extends State<EarningTabPage> {
   print(earningList[0]);
   print(_totalEarning);
   }
+
+  String formatNumber(double num) {
+  if (num >= 1000000) {
+    return '${(num/1000000).toStringAsFixed(1)}M';
+  } else if (num >= 1000) {
+    return '${(num/1000).toStringAsFixed(1)}k';
+  } else {
+    return '$num';
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,6 +85,8 @@ class _EarningTabPageState extends State<EarningTabPage> {
                       axisNameWidget: Text(""), drawBehindEverything: true),
                   rightTitles: AxisTitles(axisNameWidget: Text(""))),
               borderData: FlBorderData(show: false),
+              
+              
               lineBarsData: [
                 LineChartBarData(spots: [
                   FlSpot(1, double.parse(earningList[0].toString())??0),
@@ -88,58 +101,62 @@ class _EarningTabPageState extends State<EarningTabPage> {
                   FlSpot(10, double.parse(earningList[9].toString())??0),
                   FlSpot(11, double.parse(earningList[10].toString())??0),
                   FlSpot(12, double.parse(earningList[11].toString())??0)
-                ])
-              ]),
+                ],color: Constants.applicationThemeColor,
+                )
+              ],
+              ),
         )
       ),),
-           Text(
-              'Earnings History',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 16),
+            SizedBox(height: 26),
             Container(
-              height: 140,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12.0),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.green.shade300,
-                    Colors.green.shade800,
-                  ],
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Rs${_totalEarning}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Total Earnings',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 24),
+  height: 150,
+  width: MediaQuery.of(context).size.width,
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(20),
+    gradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        Colors.black26,
+        Colors.black87,
+      ],
+    ),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.grey.shade500,
+        offset: Offset(0, 3),
+        blurRadius: 6,
+      ),
+    ],
+  ),
+  child: Padding(
+    padding: EdgeInsets.all(16),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'Total Earnings',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          'Rs ${formatNumber(_totalEarning)}',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 35,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 30),
+      ],
+    ),
+  ),
+)
             
             
           ],

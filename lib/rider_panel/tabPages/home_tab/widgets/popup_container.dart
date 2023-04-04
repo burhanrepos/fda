@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:fda/rider_panel/tabPages/home_tab/widgets/order_progress_bar.dart';
 import 'package:fda/rider_panel/tabPages/home_tab/widgets/user_order_request.dart';
+import 'package:fda/widgets/constants.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -61,9 +62,9 @@ class _PopupContainerState extends State<PopupContainer>
   @override
   void dispose() {
     _animationController!.dispose();
-    HomeTabPage.allUser.clear();
-    HomeTabPage.markers.clear();
-    HomeTabPage.polyline.clear();
+    RiderHomeTabPage.allUser.clear();
+    RiderHomeTabPage.markers.clear();
+    RiderHomeTabPage.polyline.clear();
     PopupContainer.driverWithActiveOrder = false;
     super.dispose();
   }
@@ -101,7 +102,7 @@ class _PopupContainerState extends State<PopupContainer>
         ElevatedButton(
           onPressed: _toggleContainer,
           style: ElevatedButton.styleFrom(
-            primary: Colors.green,
+            primary: Constants.applicationThemeWhiteColor,
             padding: const EdgeInsets.symmetric(horizontal: 18),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(26),
@@ -121,14 +122,14 @@ class _PopupContainerState extends State<PopupContainer>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       PopupContainer.driverWithActiveOrder == true
-                          ? Text("Order in progress")
+                          ? Text("Order in progress",style: TextStyle(color: Constants.applicationThemeColor,fontWeight: FontWeight.bold),)
                           : Row(
                               children: [
-                                Text("Orders "),
+                                Text("Orders ",style: TextStyle(color: Constants.applicationThemeColor,fontWeight: FontWeight.bold)),
                                 Text(
-                                  HomeTabPage.allUser.length>0?'(${HomeTabPage.allUser.length})':'',
+                                  RiderHomeTabPage.allUser.length>0?'(${RiderHomeTabPage.allUser.length})':'',
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: Constants.applicationThemeColor,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 17),
                                 )
@@ -136,7 +137,7 @@ class _PopupContainerState extends State<PopupContainer>
                             ),
                       Icon(_isOpened
                           ? Icons.arrow_drop_down_sharp
-                          : Icons.arrow_drop_up_sharp),
+                          : Icons.arrow_drop_up_sharp,color: Constants.applicationThemeColor,),
                     ],
                   ),
           ),

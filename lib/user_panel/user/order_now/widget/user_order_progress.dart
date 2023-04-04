@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
 import '../../../../global/global.dart';
+import '../../../../widgets/constants.dart';
 
 class UserOrderProgress extends StatefulWidget {
   final Function() updateState;
@@ -36,7 +37,7 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
             Text(
               "Order Status",
               style: TextStyle(
-                  color: Colors.green,
+                  color: Constants.applicationThemeColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 23),
             ),
@@ -52,13 +53,13 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                         color: UserMainScreen.activeOrderDetails['orderDetails']
                                     ['placed'] ==
                                 true
-                            ? Colors.green
+                            ? Constants.applicationThemeColor
                             : Colors.grey),
                     indicatorStyle: IndicatorStyle(
                       color: UserMainScreen.activeOrderDetails['orderDetails']
                                   ['placed'] ==
                               true
-                          ? Colors.green
+                          ? Constants.applicationThemeColor
                           : Colors.grey,
                       iconStyle: IconStyle(
                         color: Colors.white,
@@ -74,7 +75,7 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                         color: UserMainScreen.activeOrderDetails['orderDetails']
                                     ['placed'] ==
                                 true
-                            ? Colors.green
+                            ? Constants.applicationThemeColor
                             : Colors.grey),
                     endChild: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -117,13 +118,13 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                         color: UserMainScreen.activeOrderDetails['orderDetails']
                                     ['accept'] ==
                                 true
-                            ? Colors.green
+                            ? Constants.applicationThemeColor
                             : Colors.grey),
                     indicatorStyle: IndicatorStyle(
                       color: UserMainScreen.activeOrderDetails['orderDetails']
                                   ['accept'] ==
                               true
-                          ? Colors.green
+                          ? Constants.applicationThemeColor
                           : Colors.grey,
                       iconStyle: IconStyle(
                         color: Colors.white,
@@ -139,7 +140,7 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                         color: UserMainScreen.activeOrderDetails['orderDetails']
                                     ['accept'] ==
                                 true
-                            ? Colors.green
+                            ? Constants.applicationThemeColor
                             : Colors.grey),
                     endChild: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -196,13 +197,13 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                         color: UserMainScreen.activeOrderDetails['orderDetails']
                                     ['processed'] ==
                                 true
-                            ? Colors.green
+                            ? Constants.applicationThemeColor
                             : Colors.grey),
                     indicatorStyle: IndicatorStyle(
                       color: UserMainScreen.activeOrderDetails['orderDetails']
                                   ['processed'] ==
                               true
-                          ? Colors.green
+                          ? Constants.applicationThemeColor
                           : Colors.grey,
                       iconStyle: IconStyle(
                         color: Colors.white,
@@ -218,7 +219,7 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                         color: UserMainScreen.activeOrderDetails['orderDetails']
                                     ['processed'] ==
                                 true
-                            ? Colors.green
+                            ? Constants.applicationThemeColor
                             : Colors.grey),
                     endChild: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -276,13 +277,13 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                         color: UserMainScreen.activeOrderDetails['orderDetails']
                                     ['delivered'] ==
                                 true
-                            ? Colors.green
+                            ? Constants.applicationThemeColor
                             : Colors.grey),
                     indicatorStyle: IndicatorStyle(
                       color: UserMainScreen.activeOrderDetails['orderDetails']
                                   ['delivered'] ==
                               true
-                          ? Colors.green
+                          ? Constants.applicationThemeColor
                           : Colors.grey,
                       iconStyle: IconStyle(
                         color: Colors.white,
@@ -294,7 +295,7 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                                 : Icons.delivery_dining,
                       ),
                     ),
-                    //   afterLineStyle: LineStyle(color: UserMainScreen.activeOrderDetails['orderDetails']['delivered']==true?Colors.green:Colors.grey),
+                    //   afterLineStyle: LineStyle(color: UserMainScreen.activeOrderDetails['orderDetails']['delivered']==true?Constants.applicationThemeColor:Colors.grey),
                     endChild: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ColorFiltered(

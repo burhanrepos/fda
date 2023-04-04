@@ -16,8 +16,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../assistants/assistant_methods.dart';
 
-class HomeTabPage extends StatefulWidget {
-  const HomeTabPage({Key? key}) : super(key: key);
+class RiderHomeTabPage extends StatefulWidget {
+  const RiderHomeTabPage({Key? key}) : super(key: key);
   static List allUser = [];
   static Set<Polyline> polyline = {};
   static Set<Marker> markers = {};
@@ -26,10 +26,10 @@ class HomeTabPage extends StatefulWidget {
    
 
   @override
-  State<HomeTabPage> createState() => _HomeTabPageState();
+  State<RiderHomeTabPage> createState() => _RiderHomeTabPageState();
 }
 
-class _HomeTabPageState extends State<HomeTabPage> {
+class _RiderHomeTabPageState extends State<RiderHomeTabPage> {
   GoogleMapController? newGoogleMapController;
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
 
@@ -283,7 +283,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
         .child("l");
         DatabaseEvent driverLocation = await ref.once();
       var location = driverLocation.snapshot.value as List;
-      HomeTabPage.sourceLocation = LatLng(location[0], location[1]);
+      RiderHomeTabPage.sourceLocation = LatLng(location[0], location[1]);
   }
 
   @override
@@ -304,8 +304,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
             blackThemeGoogleMap();
           },
           
-          polylines: HomeTabPage.polyline,
-          markers: HomeTabPage.markers,
+          polylines: RiderHomeTabPage.polyline,
+          markers: RiderHomeTabPage.markers,
         ),
         statusText != "Now Online"
             ? Container(
@@ -403,10 +403,10 @@ class _HomeTabPageState extends State<HomeTabPage> {
       DatabaseEvent usersWithOrder = await userReference.once();
       usersDetails = usersWithOrder.snapshot.value;
       currentFirebaseUser = firebaseUser;
-      HomeTabPage.allUser = [];
+      RiderHomeTabPage.allUser = [];
       for (var category in usersDetails.keys) {
         if (usersDetails[category]['orderDetails'] != null) {
-          HomeTabPage.allUser.add(usersDetails[category]);
+          RiderHomeTabPage.allUser.add(usersDetails[category]);
         }
       }
       print("All User========================");
