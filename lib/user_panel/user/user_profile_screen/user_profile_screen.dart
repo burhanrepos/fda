@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:fda/user_panel/user_mainscreen/usermain_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import '../../../global/global.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:path/path.dart';
+
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({Key? key}) : super(key: key);
@@ -15,6 +21,9 @@ class UserProfileScreen extends StatefulWidget {
 class _UserProfileScreenState extends State<UserProfileScreen> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _storage = FirebaseStorage.instance;
+final _database = FirebaseDatabase.instance;
+
   bool editing = false;
   bool loader = false;
   var userProfileDetails;
@@ -30,8 +39,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   @override
   initState() {
-    print("Current User Login");
-print(currentFirebaseUser!.metadata.creationTime);
+    super.initState();
     getUserData();
   }
 
@@ -126,12 +134,57 @@ print(currentFirebaseUser!.metadata.creationTime);
               )
             : Column(
                 children: [
-                  SizedBox(height: 16),
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(
-                        'https://www.w3schools.com/w3images/avatar2.png'),
-                  ),
+                  SizedBox(height: 16)
+                  ,Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+    //   alignment: Alignment.bottomRight,
+      children: [
+        CircleAvatar(
+          radius: 50,
+          backgroundImage: NetworkImage(
+      // Use the user's profile image URL retrieved from Firebase Realtime Database
+      userProfileDetails['imageUrl']==null?'https://www.w3schools.com/w3images/avatar2.png': userProfileDetails['imageUrl'],
+    ),
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.edit,
+            color: Colors.black,
+            size: 23,
+          ),
+          onPressed: () async {
+          // Pick an image file from the device
+          FilePickerResult? result = await FilePicker.platform.pickFiles(
+            type: FileType.image,
+            allowMultiple: false,
+          );
+        
+          if (result != null) {
+            // Get the selected file's path and name
+            File file = File(result.files.single.path! );
+            String fileName = basename(file.path);
+        
+            // Upload the image to Firebase Storage
+            Reference ref = _storage.ref().child('images/$fileName');
+            UploadTask uploadTask = ref.putFile(file);
+            TaskSnapshot snapshot = await uploadTask;
+        
+            // Get the image download URL from Firebase Storage
+            String imageUrl = await snapshot.ref.getDownloadURL();
+            print("IMage download url${imageUrl}");
+        
+            // Store the image URL in Firebase Realtime Database
+            DatabaseReference userRef = _database.reference().child('users').child(currentFirebaseUser!.uid);
+            userRef.update({
+        'imageUrl': imageUrl,
+            });
+            getUserData();
+          }
+        },
+        ),
+      ],
+    ),
                   SizedBox(height: 16),
                   Text(
                     '${userProfileDetails['name']}',
