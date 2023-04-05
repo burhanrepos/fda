@@ -19,10 +19,10 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
 
   @override
   initState() {
-    getEarningData();
+    getProfileData();
   }
 
-  getEarningData() async {
+  getProfileData() async {
     loader = true;
     DatabaseReference? ref = FirebaseDatabase.instance
         .ref()
@@ -95,7 +95,7 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    '${driverDetails['name'] ?? '-'}',
+                                    '${driverDetails?['name'] ?? '-'}',
                                     style: TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold,

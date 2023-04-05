@@ -1,4 +1,5 @@
 import 'package:fda/splashScreen/usersplash_screen.dart';
+import 'package:fda/user_panel/user/user_profile_screen/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fda/global/global.dart';
 import 'package:fda/splashScreen/splash_screen.dart';
@@ -89,7 +90,7 @@ class _MyDrawerState extends State<MyDrawer>
           GestureDetector(
             onTap: ()
             {
-
+                Navigator.push(context,MaterialPageRoute(builder: (c)=>UserProfileScreen()));
             },
             child: const ListTile(
               leading: Icon(Icons.person, color: Colors.white54,),

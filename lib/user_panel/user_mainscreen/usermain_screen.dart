@@ -237,14 +237,14 @@ class _UserMainScreenState extends State<UserMainScreen> {
   );
 
   getAllActiveOrders() async {
-    var activeOrders;
+    var activeOrders = null;
     DatabaseReference userReference =
         FirebaseDatabase.instance.ref().child("activeOrders");
     // Get the data once
     DatabaseEvent usersWithOrder = await userReference.once();
     activeOrders = usersWithOrder.snapshot.value;
-
-    for (var category in activeOrders.keys) {
+    if(activeOrders != null){
+    for (var category in activeOrders?.keys) {
       if (activeOrders[category]['orderDetails']['id'] ==
           currentFirebaseUser!.uid) {
         UserMainScreen.allActiveOrders = activeOrders;
@@ -257,6 +257,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
           timer?.cancel();
         setState(() {});
       }
+    }
     }
   }
 
@@ -429,6 +430,9 @@ class _UserMainScreenState extends State<UserMainScreen> {
   @override
   void initState() {
     super.initState();
+    print("CUrrent User Info");
+    print(userModelCurrentInfo);
+    print(currentFirebaseUser!.uid);
     timer = Timer.periodic(
         Duration(seconds: 15), (Timer t) => getAllActiveOrders());
     checkIfLocationPermissionAllowed();
@@ -450,8 +454,8 @@ updateState(){
         child: Theme(
           data: Theme.of(context).copyWith(canvasColor: Colors.black54),
           child: MyDrawer(
-            name: userModelCurrentInfo!.name,
-            email: userModelCurrentInfo!.email,
+            name: userModelCurrentInfo?.name??"-",
+            email: userModelCurrentInfo?.email??"-",
           ),
         ),
       ),
