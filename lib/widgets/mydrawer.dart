@@ -7,6 +7,8 @@ import 'package:fda/global/global.dart';
 import 'package:fda/splashScreen/splash_screen.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import '../user_panel/user/about/about.dart';
+
 class MyDrawer extends StatefulWidget {
   String? name;
   String? email;
@@ -154,7 +156,10 @@ class _MyDrawerState extends State<MyDrawer> {
           ),
 
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+                              Navigator.push(
+                  context, MaterialPageRoute(builder: (c) => UserAboutScreen()));
+            },
             child: const ListTile(
               leading: Icon(
                 Icons.info,
