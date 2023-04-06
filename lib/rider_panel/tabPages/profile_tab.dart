@@ -1,9 +1,14 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fda/global/global.dart';
 import 'package:fda/splashScreen/splash_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:path/path.dart';
 
 class RiderProfileTabPage extends StatefulWidget {
   const RiderProfileTabPage({Key? key}) : super(key: key);
@@ -16,6 +21,8 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
   var driverDetails;
   bool loader = false;
   String _rating = '0.0';
+  final _storage = FirebaseStorage.instance;
+  final _database = FirebaseDatabase.instance;
 
   @override
   initState() {
@@ -85,11 +92,145 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
                           SizedBox(height: 10),
                           Row(
                             children: [
-                              CircleAvatar(
-                                radius: 40,
-                                backgroundImage: NetworkImage(
-                                    'https://randomuser.me/api/portraits/men/72.jpg'),
+                              Container(
+                                margin: EdgeInsets.symmetric(horizontal: 30),
+                                child: Stack(
+                                  children: [
+                                    // Image(
+                                    //   image: AssetImage('images/add-image.png'),
+                                    // ),
+                                    driverDetails['imageUrl'] != null
+                                        ? CircleAvatar(
+                                            radius: 50,
+                                            backgroundImage: NetworkImage(
+                                              driverDetails['imageUrl'],
+                                            ),
+                                          )
+                                        : CircleAvatar(
+                                            backgroundColor: Colors.black,
+                                            radius: 50,
+                                            child: Icon(
+                                              Icons.person,
+                                              color: Colors.white,
+                                              size: 40,
+                                            ),
+                                          ),
+                                    Positioned(
+                                      bottom: -5,
+                                      right: -5,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          IconButton(
+                                            color: Colors.black,
+                                            icon: CircleAvatar(
+                                              radius: 30.0,
+                                                //  backgroundColor: Colors.transparent,
+                                              backgroundImage: AssetImage(
+                                                      'images/add-image.png')
+                                                  as ImageProvider,
+                                            ),
+                                            onPressed: () async {
+                                              // Pick an image file from the device
+                                              FilePickerResult? result =
+                                                  await FilePicker.platform
+                                                      .pickFiles(
+                                                type: FileType.image,
+                                                allowMultiple: false,
+                                              );
+
+                                              if (result != null) {
+                                                // Get the selected file's path and name
+                                                File file = File(
+                                                    result.files.single.path!);
+                                                String fileName =
+                                                    basename(file.path);
+
+                                                // Upload the image to Firebase Storage
+                                                Reference ref = _storage
+                                                    .ref()
+                                                    .child('images/$fileName');
+                                                UploadTask uploadTask =
+                                                    ref.putFile(file);
+                                                TaskSnapshot snapshot =
+                                                    await uploadTask;
+
+                                                // Get the image download URL from Firebase Storage
+                                                String imageUrl = await snapshot
+                                                    .ref
+                                                    .getDownloadURL();
+                                                print(
+                                                    "IMage download url${imageUrl}");
+
+                                                // Store the image URL in Firebase Realtime Database
+                                                DatabaseReference driverRef =
+                                                    _database
+                                                        .reference()
+                                                        .child('drivers')
+                                                        .child(
+                                                            currentFirebaseUser!
+                                                                .uid);
+                                                driverRef.update({
+                                                  'imageUrl': imageUrl,
+                                                });
+                                                getProfileData();
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
+                              //                       Row(
+                              //                         children: [
+                              //                           CircleAvatar(
+                              //                             radius: 40,
+                              //                             backgroundImage: NetworkImage(
+                              //                                 'https://randomuser.me/api/portraits/men/72.jpg'),
+                              //                           ),
+                              //                           IconButton(
+                              //   icon: CircleAvatar(
+                              //                         radius: 30.0,
+                              //                         backgroundColor: Colors.transparent,
+                              //                         backgroundImage:
+                              //                             AssetImage('images/add-image.png')
+                              //                                 as ImageProvider),
+                              //   onPressed: () async {
+                              //   // Pick an image file from the device
+                              //   FilePickerResult? result = await FilePicker.platform.pickFiles(
+                              //     type: FileType.image,
+                              //     allowMultiple: false,
+                              //   );
+
+                              //   if (result != null) {
+                              //     // Get the selected file's path and name
+                              //     File file = File(result.files.single.path! );
+                              //     String fileName = basename(file.path);
+
+                              //     // Upload the image to Firebase Storage
+                              //     Reference ref = _storage.ref().child('images/$fileName');
+                              //     UploadTask uploadTask = ref.putFile(file);
+                              //     TaskSnapshot snapshot = await uploadTask;
+
+                              //     // Get the image download URL from Firebase Storage
+                              //     String imageUrl = await snapshot.ref.getDownloadURL();
+                              //     print("IMage download url${imageUrl}");
+
+                              //     // Store the image URL in Firebase Realtime Database
+                              //     DatabaseReference driverRef = _database.reference().child('drivers').child(currentFirebaseUser!.uid);
+                              //     driverRef.update({
+                              // 'imageUrl': imageUrl,
+                              //     });
+                              //     getProfileData();
+                              //   }
+                              // },
+                              // ),
+
+                              //                         ],
+                              //                       ),
                               SizedBox(width: 10),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
