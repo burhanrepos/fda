@@ -140,13 +140,19 @@ final _database = FirebaseDatabase.instance;
                     crossAxisAlignment: CrossAxisAlignment.end,
     //   alignment: Alignment.bottomRight,
       children: [
-        CircleAvatar(
+         userProfileDetails['imageUrl']!=null?CircleAvatar(
           radius: 50,
-          backgroundImage: NetworkImage(
-      // Use the user's profile image URL retrieved from Firebase Realtime Database
-      userProfileDetails['imageUrl']==null?'https://www.w3schools.com/w3images/avatar2.png': userProfileDetails['imageUrl'],
+          backgroundImage: NetworkImage(userProfileDetails['imageUrl'],
     ),
-        ),
+        ):CircleAvatar(
+            backgroundColor: Colors.white,
+            radius: 30,
+            child: Icon(
+              Icons.person,
+              color: Colors.black,
+              size: 40,
+            ),
+          ),
         IconButton(
           icon: Icon(
             Icons.edit,
