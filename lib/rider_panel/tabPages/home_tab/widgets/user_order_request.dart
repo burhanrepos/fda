@@ -302,12 +302,22 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
                       children: [
                         Row(
                           children: [
-                            CircleAvatar(
-                                radius: 30.0,
-                                backgroundColor: Colors.transparent,
-                                backgroundImage:
-                                    AssetImage('images/profile_icon.png')
-                                        as ImageProvider),
+                            usersRequest[index]['imageUrl'] != null
+                                        ? CircleAvatar(
+                                            radius: 30,
+                                            backgroundImage: NetworkImage(
+                                               usersRequest[index]['imageUrl'],
+                                            ),
+                                          )
+                                        : CircleAvatar(
+                                            backgroundColor: Colors.black,
+                                            radius: 30,
+                                            child: Icon(
+                                              Icons.person,
+                                              color: Colors.white,
+                                              size: 40,
+                                            ),
+                                          ),
                             SizedBox(width: 10.0),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

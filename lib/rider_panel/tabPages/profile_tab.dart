@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:fda/rider_panel/tabPages/profile_tab/widget/bike_info_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
   }
 
   getProfileData() async {
+    setState(() {});
     loader = true;
     DatabaseReference? ref = FirebaseDatabase.instance
         .ref()
@@ -55,7 +57,27 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text('Profile')),
-        automaticallyImplyLeading: false,
+        // automaticallyImplyLeading: false,
+        leading: SizedBox(),
+        actions: [
+          TextButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return BikeInfoDialog(
+                        driverDetails: driverDetails,
+                        updateState: () {
+                          getProfileData();
+                        });
+                  },
+                );
+              },
+              child: Text(
+                'edit',
+                style: TextStyle(color: Colors.white),
+              ))
+        ],
       ),
       backgroundColor: Colors.grey[200],
       body: loader
@@ -126,7 +148,7 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
                                             color: Colors.black,
                                             icon: CircleAvatar(
                                               radius: 30.0,
-                                                //  backgroundColor: Colors.transparent,
+                                              //  backgroundColor: Colors.transparent,
                                               backgroundImage: AssetImage(
                                                       'images/add-image.png')
                                                   as ImageProvider,
@@ -184,63 +206,22 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
                                   ],
                                 ),
                               ),
-                              //                       Row(
-                              //                         children: [
-                              //                           CircleAvatar(
-                              //                             radius: 40,
-                              //                             backgroundImage: NetworkImage(
-                              //                                 'https://randomuser.me/api/portraits/men/72.jpg'),
-                              //                           ),
-                              //                           IconButton(
-                              //   icon: CircleAvatar(
-                              //                         radius: 30.0,
-                              //                         backgroundColor: Colors.transparent,
-                              //                         backgroundImage:
-                              //                             AssetImage('images/add-image.png')
-                              //                                 as ImageProvider),
-                              //   onPressed: () async {
-                              //   // Pick an image file from the device
-                              //   FilePickerResult? result = await FilePicker.platform.pickFiles(
-                              //     type: FileType.image,
-                              //     allowMultiple: false,
-                              //   );
-
-                              //   if (result != null) {
-                              //     // Get the selected file's path and name
-                              //     File file = File(result.files.single.path! );
-                              //     String fileName = basename(file.path);
-
-                              //     // Upload the image to Firebase Storage
-                              //     Reference ref = _storage.ref().child('images/$fileName');
-                              //     UploadTask uploadTask = ref.putFile(file);
-                              //     TaskSnapshot snapshot = await uploadTask;
-
-                              //     // Get the image download URL from Firebase Storage
-                              //     String imageUrl = await snapshot.ref.getDownloadURL();
-                              //     print("IMage download url${imageUrl}");
-
-                              //     // Store the image URL in Firebase Realtime Database
-                              //     DatabaseReference driverRef = _database.reference().child('drivers').child(currentFirebaseUser!.uid);
-                              //     driverRef.update({
-                              // 'imageUrl': imageUrl,
-                              //     });
-                              //     getProfileData();
-                              //   }
-                              // },
-                              // ),
-
-                              //                         ],
-                              //                       ),
-                              SizedBox(width: 10),
+                             
+                            //   SizedBox(width: 5),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    '${driverDetails?['name'] ?? '-'}',
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                                  Container(
+                                    width: MediaQuery.of(context).size.width*0.4,
+                                    child: Text(
+                                      '${driverDetails?['name'] ?? '-'}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis, 
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ),
                                   SizedBox(height: 5),
