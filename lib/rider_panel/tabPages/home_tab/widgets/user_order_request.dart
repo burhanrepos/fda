@@ -322,13 +322,18 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  usersRequest[index]['name'].toString(),
-                                  style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
-                                  //   softWrap: true,
+                                Container(
+                                    width: MediaQuery.of(context).size.width*0.3,
+                                  child: Text(
+                                    usersRequest[index]['name'].toString(),
+                                    maxLines: 1,
+                                      overflow: TextOverflow.ellipsis, 
+                                    style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                    //   softWrap: true,
+                                  ),
                                 ),
                                 SizedBox(
                                   height: 5,

@@ -492,7 +492,10 @@ DatabaseReference ref = FirebaseDatabase.instance
                         PopupContainer.currentRiderOrderInProgress['orderDetails']
                                   ['delivered'] == true || PopupContainer.currentRiderOrderInProgress['orderDetails']
                                   ['received'] == true
-                          ?ElevatedButton(onPressed: (){
+                          ?(PopupContainer.currentRiderOrderInProgress['orderDetails']
+                                  ['completed'] == true || PopupContainer.currentRiderOrderInProgress['orderDetails']
+                                  ['delivered'] == true) && PopupContainer.currentRiderOrderInProgress['orderDetails']
+                                  ['received'] == true ?ElevatedButton(onPressed: (){
                             print("Order Status ===============${PopupContainer.currentRiderOrderInProgress['orderDetails']
                                   ['received']}");
                                   setState(() {
@@ -510,7 +513,15 @@ DatabaseReference ref = FirebaseDatabase.instance
                             fontSize: 16,
                             
                           ),
-                        ),):Container()
+                        ),):Container(
+                            padding: EdgeInsets.all(5),
+                            decoration: BoxDecoration(color:  Constants.applicationThemeColor,
+                            borderRadius: BorderRadius.all(Radius.circular(5))),
+                          child: Text("Wait for Client respose of receving",style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white
+                            ),),
+                        ):Container()
                       ],
                     ),
                     ],
