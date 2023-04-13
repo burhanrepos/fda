@@ -12,7 +12,7 @@ import '../home_tab.dart';
 class PopupContainer extends StatefulWidget {
   final Function() myState;
   static bool driverWithActiveOrder = false;
-  static var currentRiderOrderInProgress;
+  static var currentRiderOrderInProgress=null;
 
   const PopupContainer({required this.myState});
 

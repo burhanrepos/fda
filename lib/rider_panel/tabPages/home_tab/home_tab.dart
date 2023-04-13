@@ -22,8 +22,8 @@ class RiderHomeTabPage extends StatefulWidget {
   static Set<Polyline> polyline = {};
   static Set<Marker> markers = {};
   static LatLng sourceLocation = LatLng(37.4219999, -122.0840575);
-  static LatLng destinationLocation = LatLng(37.42796133580664, -122.085749655962);
-   
+  static LatLng destinationLocation =
+      LatLng(37.42796133580664, -122.085749655962);
 
   @override
   State<RiderHomeTabPage> createState() => _RiderHomeTabPageState();
@@ -40,9 +40,9 @@ class _RiderHomeTabPageState extends State<RiderHomeTabPage> {
   var geoLocator = Geolocator();
   LocationPermission? _locationPermission;
   static Key _mapKey = UniqueKey();
-  
-    static void  _refreshMap(StateSetter state) {
-    state.call((){
+
+  static void _refreshMap(StateSetter state) {
+    state.call(() {
       _mapKey = UniqueKey();
     });
   }
@@ -51,8 +51,6 @@ class _RiderHomeTabPageState extends State<RiderHomeTabPage> {
   Color buttonColor = Colors.grey;
   bool isDriverActive = false;
   Timer? timer;
-
-
 
   StreamSubscription<Position>? streamSubscriptionPosition;
   static User? get firebaseUser => currentFirebaseUser;
@@ -256,43 +254,42 @@ class _RiderHomeTabPageState extends State<RiderHomeTabPage> {
             driverCurrentPosition!, context);
     print("this is your address = " + humanReadableAddress);
   }
-  void _updateState() {
-    setState(() { });
-    initState();
-    setState(() { });
 
+  void _updateState() {
+    setState(() {});
+    initState();
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    timer = Timer.periodic(
-        Duration(seconds: 15), (Timer t) => getAllOrders());
+    timer = Timer.periodic(Duration(seconds: 15), (Timer t) => getAllOrders());
     // getAllOrders();
     setSourceLocation();
-    
-        // HomeTabPage.sourceLocation =LatLng(ref., longitude)
+
+    // HomeTabPage.sourceLocation =LatLng(ref., longitude)
 
     checkIfLocationPermissionAllowed();
   }
-  setSourceLocation() async{
+
+  setSourceLocation() async {
     DatabaseReference ref = FirebaseDatabase.instance
         .ref()
         .child("activeDrivers")
         .child(currentFirebaseUser!.uid)
         .child("l");
-        DatabaseEvent driverLocation = await ref.once();
-      var location = driverLocation.snapshot.value as List;
-      RiderHomeTabPage.sourceLocation = LatLng(location[0], location[1]);
+    DatabaseEvent driverLocation = await ref.once();
+    var location = driverLocation.snapshot.value as List;
+    RiderHomeTabPage.sourceLocation = LatLng(location[0], location[1]);
   }
 
   @override
   Widget build(BuildContext context) {
-    
     return Stack(
       children: [
         GoogleMap(
-            key: _mapKey,
+          key: _mapKey,
           mapType: MapType.normal,
           myLocationEnabled: true,
           initialCameraPosition: _kGooglePlex,
@@ -303,7 +300,6 @@ class _RiderHomeTabPageState extends State<RiderHomeTabPage> {
             //black theme google map
             blackThemeGoogleMap();
           },
-          
           polylines: RiderHomeTabPage.polyline,
           markers: RiderHomeTabPage.markers,
         ),
@@ -380,7 +376,7 @@ class _RiderHomeTabPageState extends State<RiderHomeTabPage> {
         ),
         statusText == "Now Online"
             ? Positioned(
-                child: PopupContainer(myState:_updateState),
+                child: PopupContainer(myState: _updateState),
                 bottom: 0,
                 left: 0,
                 right: 0,
@@ -393,7 +389,7 @@ class _RiderHomeTabPageState extends State<RiderHomeTabPage> {
   }
 
   getAllOrders() async {
-      print("All User========================${firebaseUser}");
+    print("All User========================${firebaseUser}");
 
     if (firebaseUser != null) {
       var usersDetails;
@@ -409,11 +405,13 @@ class _RiderHomeTabPageState extends State<RiderHomeTabPage> {
           RiderHomeTabPage.allUser.add(usersDetails[category]);
         }
       }
+      if (RiderHomeTabPage.allUser.length > 0 &&
+          PopupContainer.currentRiderOrderInProgress == null) {
+        PopupContainer.driverWithActiveOrder = false;
+        setState(() {});
+      }
       print("All User========================");
       print(usersDetails);
-    //   setState(() {
-        
-    //   });
     } else {
       Fluttertoast.showToast(msg: "Error while fetching data from firebase.");
     }
@@ -468,5 +466,3 @@ class _RiderHomeTabPageState extends State<RiderHomeTabPage> {
     });
   }
 }
-
-
