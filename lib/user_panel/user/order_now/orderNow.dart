@@ -119,6 +119,7 @@ SaveOrder(){
     driversRef.child(currentFirebaseUser!.uid).child("orderDetails").set(userOrder);
     currentFirebaseUser = firebaseUser;
     Fluttertoast.showToast(msg: 'Your order has been sent to rider');
+    UserMainScreen.OrderDetailsOfCurrentUser=null;
     Navigator.push(context,MaterialPageRoute(builder: (c)=>UserMainScreen()));
   }
   else{

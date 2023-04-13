@@ -39,7 +39,8 @@ class _UserHistoryState extends State<UserHistory> {
         completedOrders.add(tempCompletedOrders[category]);
         }
       }
-    //   print(completedOrders[0]);
+    print(completedOrders);
+      
       setState(() {
     loader = false;
         

@@ -3,6 +3,7 @@ import 'package:fda/user_panel/user/order_now/widget/rating.dart';
 import 'package:fda/user_panel/user_mainscreen/usermain_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
 import '../../../../global/global.dart';
@@ -10,19 +11,18 @@ import '../../../../widgets/constants.dart';
 
 class UserOrderProgress extends StatefulWidget {
   final Function() updateState;
+  final Function() drawPoliline;
 
-  UserOrderProgress({required this.updateState});
+  UserOrderProgress({required this.updateState, required this.drawPoliline});
   @override
   _UserOrderProgressState createState() => _UserOrderProgressState();
 }
 
 class _UserOrderProgressState extends State<UserOrderProgress> {
-  
-
   @override
   dispose() {
-    super.dispose();
     UserMainScreen.activeOrderDetails = null;
+    super.dispose();
   }
 
   @override
@@ -41,10 +41,35 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                   fontWeight: FontWeight.bold,
                   fontSize: 23),
             ),
+            Container(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        widget.drawPoliline();
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            "Locate on map",
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.redAccent),
+                          ),
+                          Icon(
+                            Icons.location_on,
+                            color: Colors.redAccent,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
+                  
                   TimelineTile(
                     alignment: TimelineAlign.manual,
                     lineXY: 0.1,
@@ -345,10 +370,11 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                                           showDialog(
                                             context: context,
                                             builder: (BuildContext context) {
-                                              return UserRating(updateState: widget.updateState);
+                                              return UserRating(
+                                                  updateState:
+                                                      widget.updateState);
                                             },
                                           );
-
                                         },
                                         child: Text(
                                           'Order Received',

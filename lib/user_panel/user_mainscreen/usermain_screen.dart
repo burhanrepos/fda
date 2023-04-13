@@ -17,6 +17,8 @@ import '../../assistants/assistant_methods.dart';
 import '../../assistants/geofire_assistant.dart';
 import 'package:fda/models/active_nearby_available_drivers.dart';
 
+import '../user/order_now/widget/user_order_placed.dart';
+
 //import '../mainScreens/searchScreen.dart';
 //import '../models/active_nearby_available_drivers.dart';
 class UserMainScreen extends StatefulWidget {
@@ -24,6 +26,12 @@ class UserMainScreen extends StatefulWidget {
   static Map<Object?, Object?>? allActiveOrders;
   static String idOfActiveOrderRider = "";
   static var activeOrderDetails;
+  static var OrderDetailsOfCurrentUser=null;
+   static Set<Polyline> polyline = {};
+  static Set<Marker> markers = {};
+  static LatLng sourceLocation = LatLng(37.4219999, -122.0840575);
+  static LatLng destinationLocation =
+      LatLng(37.42796133580664, -122.085749655962);
 
   @override
   State<UserMainScreen> createState() => _UserMainScreenState();
@@ -190,7 +198,6 @@ class _UserMainScreenState extends State<UserMainScreen> {
   List<LatLng> pLineCoOrdinatesList = [];
   Set<Polyline> polyLineSet = {};
 
-  Set<Marker> markersSet = {};
   Set<Circle> circlesSet = {};
 
   String userName = "your Name";
@@ -240,9 +247,14 @@ class _UserMainScreenState extends State<UserMainScreen> {
     var activeOrders = null;
     DatabaseReference userReference =
         FirebaseDatabase.instance.ref().child("activeOrders");
+        DatabaseReference currentUserReference =
+        FirebaseDatabase.instance.ref().child("users").child(currentFirebaseUser!.uid);
     // Get the data once
     DatabaseEvent usersWithOrder = await userReference.once();
+    DatabaseEvent currentUserEvent = await currentUserReference.once();
     activeOrders = usersWithOrder.snapshot.value;
+    UserMainScreen.OrderDetailsOfCurrentUser = currentUserEvent.snapshot.value;
+    print("Current User Order Details======${UserMainScreen.OrderDetailsOfCurrentUser}");
     if(activeOrders != null){
     for (var category in activeOrders?.keys) {
       if (activeOrders[category]['orderDetails']['id'] ==
@@ -255,10 +267,10 @@ class _UserMainScreenState extends State<UserMainScreen> {
 
         if (activeOrders[category]['orderDetails']['completed'] == true)
           timer?.cancel();
-        setState(() {});
       }
     }
     }
+        setState(() {});
   }
 
   blackThemeGoogleMap() {
@@ -440,10 +452,51 @@ class _UserMainScreenState extends State<UserMainScreen> {
 
 updateState(){
     UserMainScreen.activeOrderDetails=null;
+    UserMainScreen.OrderDetailsOfCurrentUser=null;
     setState(() {
       
     });
 }
+drawPoliline() {
+    var userDetails=UserMainScreen.OrderDetailsOfCurrentUser;
+    UserMainScreen.destinationLocation = LatLng(
+        userDetails['orderDetails']['latitude'],
+        userDetails['orderDetails']['longitude']);
+    print("Destination =======${UserMainScreen.destinationLocation}");
+    print("Source =======${UserMainScreen.sourceLocation}");
+    UserMainScreen.markers.add(
+      Marker(
+        markerId: MarkerId("source"),
+        position: UserMainScreen.sourceLocation,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        infoWindow: InfoWindow(
+          title: "Source",
+        ),
+      ),
+    );
+    UserMainScreen.markers.add(
+      Marker(
+        markerId: MarkerId("destination"),
+        position: UserMainScreen.destinationLocation,
+        infoWindow: InfoWindow(
+          title: "Destination",
+        ),
+      ),
+    );
+    UserMainScreen.polyline.add(Polyline(
+      polylineId: PolylineId("route1"),
+      visible: true,
+      width: 10,
+      color: Colors.blueAccent,
+      endCap: Cap.buttCap,
+      points: [UserMainScreen.sourceLocation, UserMainScreen.destinationLocation],
+    ));
+    print('HOME PAGE REFERENCE');
+    setState(() {
+      
+    });
+    // Navigator.of(context).pop();
+  }
   @override
   Widget build(BuildContext context) {
     createActiveNearbyDriverIconMarker();
@@ -517,8 +570,9 @@ updateState(){
             myLocationButtonEnabled: false,
             zoomGesturesEnabled: true,
             zoomControlsEnabled: true,
-            markers: markersSet,
             circles: circlesSet,
+            polylines: UserMainScreen.polyline,
+          markers: UserMainScreen.markers,
             // polylines: _polyline,
             initialCameraPosition: _kGooglePlex,
             //markers: Set<Marker>.of(_markers),
@@ -537,8 +591,8 @@ updateState(){
             right: 0.0,
             left: 0.0,
             bottom: 0.0,
-            child: UserMainScreen.activeOrderDetails != null
-                ? UserOrderProgress(updateState: updateState)
+            child: UserMainScreen.activeOrderDetails != null || UserMainScreen.OrderDetailsOfCurrentUser != null
+                ? UserMainScreen.activeOrderDetails != null?UserOrderProgress(updateState: updateState,drawPoliline: drawPoliline,):UserOrderPlaced()
                 : Container(
                     height: 250.0,
                     decoration: BoxDecoration(
@@ -760,7 +814,8 @@ updateState(){
 
   displayActiveDriversOnUsersMap() {
     setState(() {
-      markersSet.clear();
+      UserMainScreen.markers.clear();
+      UserMainScreen.polyline.clear();
       circlesSet.clear();
 
       Set<Marker> driversMarkerSet = Set<Marker>();
@@ -781,7 +836,7 @@ updateState(){
       }
 
       setState(() {
-        markersSet = driversMarkerSet;
+        UserMainScreen.markers = driversMarkerSet;
       });
     });
   }

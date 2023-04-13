@@ -489,31 +489,34 @@ DatabaseReference ref = FirebaseDatabase.instance
                             fontSize: 16,
                           ),
                         ),
-                        PopupContainer.currentRiderOrderInProgress['orderDetails']
-                                  ['delivered'] == true || PopupContainer.currentRiderOrderInProgress['orderDetails']
-                                  ['received'] == true
-                          ?(PopupContainer.currentRiderOrderInProgress['orderDetails']
-                                  ['completed'] == true || PopupContainer.currentRiderOrderInProgress['orderDetails']
-                                  ['delivered'] == true) && PopupContainer.currentRiderOrderInProgress['orderDetails']
-                                  ['received'] == true ?ElevatedButton(onPressed: (){
-                            print("Order Status ===============${PopupContainer.currentRiderOrderInProgress['orderDetails']
-                                  ['received']}");
-                                  setState(() {
-                                    
-                                  });
-                                  
-                              PopupContainer.currentRiderOrderInProgress['orderDetails']
+                        (PopupContainer.currentRiderOrderInProgress['orderDetails']
+                                  ['completed'] == false && PopupContainer.currentRiderOrderInProgress['orderDetails']
                                   ['delivered'] == true && PopupContainer.currentRiderOrderInProgress['orderDetails']
-                                  ['received'] == false?orderCompleted(PopupContainer.currentRiderOrderInProgress):orderRemovedFromActiveOrder(PopupContainer.currentRiderOrderInProgress);
-                          }, child: Text(
-                          PopupContainer.currentRiderOrderInProgress['orderDetails']
-                                  ['delivered'] == true && PopupContainer.currentRiderOrderInProgress['orderDetails']
-                                  ['completed'] == false?'Delivered':'Completed',
+                                  ['received'] ==false) ?ElevatedButton(onPressed: (){
+                                  setState(() {});
+                                  orderCompleted(PopupContainer.currentRiderOrderInProgress);
+                          }, child: Text('Delivered',
                           style: TextStyle(
                             fontSize: 16,
                             
                           ),
-                        ),):Container(
+                        ),):SizedBox(),
+                        (PopupContainer.currentRiderOrderInProgress['orderDetails']
+                                  ['completed'] == true && PopupContainer.currentRiderOrderInProgress['orderDetails']
+                                  ['delivered'] == true && PopupContainer.currentRiderOrderInProgress['orderDetails']
+                                  ['received'] ==true) ?ElevatedButton(onPressed: (){
+                                  setState(() {});
+                                  orderRemovedFromActiveOrder(PopupContainer.currentRiderOrderInProgress);
+                          }, child: Text('Completed',
+                          style: TextStyle(
+                            fontSize: 16,
+                            
+                          ),
+                        ),):SizedBox(),
+                        (PopupContainer.currentRiderOrderInProgress['orderDetails']
+                                  ['completed'] == true && PopupContainer.currentRiderOrderInProgress['orderDetails']
+                                  ['delivered'] == true && PopupContainer.currentRiderOrderInProgress['orderDetails']
+                                  ['received'] ==false) ?Container(
                             padding: EdgeInsets.all(5),
                             decoration: BoxDecoration(color:  Constants.applicationThemeColor,
                             borderRadius: BorderRadius.all(Radius.circular(5))),
@@ -521,7 +524,7 @@ DatabaseReference ref = FirebaseDatabase.instance
                               fontSize: 14,
                               color: Colors.white
                             ),),
-                        ):Container()
+                        ):SizedBox(),
                       ],
                     ),
                     ],
