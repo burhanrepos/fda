@@ -60,7 +60,7 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
         // automaticallyImplyLeading: false,
         leading: SizedBox(),
         actions: [
-          TextButton(
+          driverDetails?['email']!=null?TextButton(
               onPressed: () {
                 showDialog(
                   context: context,
@@ -76,7 +76,7 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
               child: Text(
                 'edit',
                 style: TextStyle(color: Colors.white),
-              ))
+              )):SizedBox()
         ],
       ),
       backgroundColor: Colors.grey[200],
@@ -137,7 +137,7 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
                                               size: 40,
                                             ),
                                           ),
-                                    Positioned(
+                                    driverDetails?['email']!=null?Positioned(
                                       bottom: -5,
                                       right: -5,
                                       child: Column(
@@ -202,7 +202,7 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
                                           ),
                                         ],
                                       ),
-                                    ),
+                                    ):SizedBox(),
                                   ],
                                 ),
                               ),

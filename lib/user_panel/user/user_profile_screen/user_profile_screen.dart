@@ -10,7 +10,6 @@ import '../../../global/global.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart';
 
-
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({Key? key}) : super(key: key);
 
@@ -22,7 +21,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _storage = FirebaseStorage.instance;
-final _database = FirebaseDatabase.instance;
+  final _database = FirebaseDatabase.instance;
 
   bool editing = false;
   bool loader = false;
@@ -32,10 +31,8 @@ final _database = FirebaseDatabase.instance;
       .ref()
       .child("users")
       .child(currentFirebaseUser!.uid);
-      DatabaseReference completedOrderReference = FirebaseDatabase.instance
-      .ref()
-      .child("completedOrder");
-
+  DatabaseReference completedOrderReference =
+      FirebaseDatabase.instance.ref().child("completedOrder");
 
   @override
   initState() {
@@ -51,12 +48,12 @@ final _database = FirebaseDatabase.instance;
     // Get the data once
     userProfileDetails = userDetailEvent.snapshot.value;
     tempCompletedOrders = completedOrdersEvent.snapshot.value;
-    completedOrders =[];
+    completedOrders = [];
     for (var category in tempCompletedOrders.keys) {
-        if(tempCompletedOrders[category]['id']==currentFirebaseUser!.uid){
+      if (tempCompletedOrders[category]['id'] == currentFirebaseUser!.uid) {
         completedOrders.add(tempCompletedOrders[category]);
-        }
       }
+    }
     print(completedOrders.length);
     if (userProfileDetails != null) {
       _nameController.text = userProfileDetails['name'];
@@ -68,7 +65,8 @@ final _database = FirebaseDatabase.instance;
       loader = false;
     });
   }
-  saveUserData(){
+
+  saveUserData() {
     ref!.child('name').set(_nameController.value.text);
     ref!.child('phone').set(_phoneController.value.text);
     getUserData();
@@ -79,10 +77,12 @@ final _database = FirebaseDatabase.instance;
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile'),
-        leading: IconButton(onPressed: (){
+        leading: IconButton(
+          onPressed: () {
             Navigator.pop(context);
             Navigator.pop(context);
-        }, icon:Icon(
+          },
+          icon: Icon(
             Icons.arrow_back,
             color: Colors.white,
           ),
@@ -105,7 +105,7 @@ final _database = FirebaseDatabase.instance;
                         )),
                     TextButton(
                         onPressed: () {
-                            saveUserData();
+                          saveUserData();
                           setState(() {
                             editing = !editing;
                           });
@@ -134,63 +134,83 @@ final _database = FirebaseDatabase.instance;
               )
             : Column(
                 children: [
-                  SizedBox(height: 16)
-                  ,Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-    //   alignment: Alignment.bottomRight,
-      children: [
-         userProfileDetails['imageUrl']!=null?CircleAvatar(
-          radius: 50,
-          backgroundImage: NetworkImage(userProfileDetails['imageUrl'],
-    ),
-        ):CircleAvatar(
-            backgroundColor: Colors.white,
-            radius: 30,
-            child: Icon(
-              Icons.person,
-              color: Colors.black,
-              size: 40,
-            ),
-          ),
-        IconButton(
-          icon: Icon(
-            Icons.edit,
-            color: Colors.black,
-            size: 23,
-          ),
-          onPressed: () async {
-          // Pick an image file from the device
-          FilePickerResult? result = await FilePicker.platform.pickFiles(
-            type: FileType.image,
-            allowMultiple: false,
-          );
-        
-          if (result != null) {
-            // Get the selected file's path and name
-            File file = File(result.files.single.path! );
-            String fileName = basename(file.path);
-        
-            // Upload the image to Firebase Storage
-            Reference ref = _storage.ref().child('images/$fileName');
-            UploadTask uploadTask = ref.putFile(file);
-            TaskSnapshot snapshot = await uploadTask;
-        
-            // Get the image download URL from Firebase Storage
-            String imageUrl = await snapshot.ref.getDownloadURL();
-            print("IMage download url${imageUrl}");
-        
-            // Store the image URL in Firebase Realtime Database
-            DatabaseReference userRef = _database.reference().child('users').child(currentFirebaseUser!.uid);
-            userRef.update({
-        'imageUrl': imageUrl,
-            });
-            getUserData();
-          }
-        },
-        ),
-      ],
-    ),
+                  SizedBox(height: 16),
+                 Stack(
+                    children: [
+                      // Image(
+                      //   image: AssetImage('images/add-image.png'),
+                      // ),
+                      userProfileDetails['imageUrl'] != null
+                          ? CircleAvatar(
+                              radius: 50,
+                              backgroundImage: NetworkImage(
+                                userProfileDetails['imageUrl'],
+                              ),
+                            )
+                          : CircleAvatar(
+                              backgroundColor: Colors.black,
+                              radius: 60,
+                              child: Icon(
+                                Icons.person,
+                                color: Colors.white,
+                                size: 70,
+                              ),
+                            ),
+                      Positioned(
+                        bottom: -5,
+                        right: -5,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              icon: CircleAvatar(
+                                radius: 30.0,
+                                //  backgroundColor: Colors.transparent,
+                                backgroundImage:
+                                    AssetImage('images/add-image.png')
+                                        as ImageProvider,
+                              ),
+                              onPressed: () async {
+                                // Pick an image file from the device
+                                FilePickerResult? result =
+                                    await FilePicker.platform.pickFiles(
+                                  type: FileType.image,
+                                  allowMultiple: false,
+                                );
+
+                                if (result != null) {
+                                  // Get the selected file's path and name
+                                  File file = File(result.files.single.path!);
+                                  String fileName = basename(file.path);
+
+                                  // Upload the image to Firebase Storage
+                                  Reference ref =
+                                      _storage.ref().child('images/$fileName');
+                                  UploadTask uploadTask = ref.putFile(file);
+                                  TaskSnapshot snapshot = await uploadTask;
+
+                                  // Get the image download URL from Firebase Storage
+                                  String imageUrl =
+                                      await snapshot.ref.getDownloadURL();
+                                  print("IMage download url${imageUrl}");
+
+                                  // Store the image URL in Firebase Realtime Database
+                                  DatabaseReference userRef = _database
+                                      .reference()
+                                      .child('users')
+                                      .child(currentFirebaseUser!.uid);
+                                  userRef.update({
+                                    'imageUrl': imageUrl,
+                                  });
+                                  getUserData();
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                   SizedBox(height: 16),
                   Text(
                     '${userProfileDetails['name']}',
@@ -212,15 +232,15 @@ final _database = FirebaseDatabase.instance;
                             controller: _nameController,
                             style: TextStyle(fontSize: 14),
                             decoration: InputDecoration(
-                              labelText: 'Name',
-                              labelStyle: TextStyle(fontSize: 21),
-                              hintText: 'John Doe',
-                              hintStyle: TextStyle(color: Colors.grey[400]),
-                              border: InputBorder.none,
-                              suffixIcon: Icon(Icons.mode_edit_outline_outlined,size: 17,)
-                              
-                              
-                            ),
+                                labelText: 'Name',
+                                labelStyle: TextStyle(fontSize: 21),
+                                hintText: 'John Doe',
+                                hintStyle: TextStyle(color: Colors.grey[400]),
+                                border: InputBorder.none,
+                                suffixIcon: Icon(
+                                  Icons.mode_edit_outline_outlined,
+                                  size: 17,
+                                )),
                             keyboardType: TextInputType.name,
                           ),
                         ),
@@ -241,14 +261,15 @@ final _database = FirebaseDatabase.instance;
                             controller: _phoneController,
                             style: TextStyle(fontSize: 14),
                             decoration: InputDecoration(
-                              label: Text('Phone'),
-                              hintText: '555-555-5555',
-                              labelStyle: TextStyle(fontSize: 21),
-                              hintStyle: TextStyle(color: Colors.grey[400]),
-                              border: InputBorder.none,
-                              suffixIcon: Icon(Icons.mode_edit_outline_outlined,size: 17,)
-
-                            ),
+                                label: Text('Phone'),
+                                hintText: '555-555-5555',
+                                labelStyle: TextStyle(fontSize: 21),
+                                hintStyle: TextStyle(color: Colors.grey[400]),
+                                border: InputBorder.none,
+                                suffixIcon: Icon(
+                                  Icons.mode_edit_outline_outlined,
+                                  size: 17,
+                                )),
                             keyboardType: TextInputType.phone,
                           ),
                         ),
@@ -257,10 +278,11 @@ final _database = FirebaseDatabase.instance;
                     title: Text('Orders Placed'),
                     subtitle: Text('${completedOrders.length}'),
                   ),
-                   ListTile(
+                  ListTile(
                     leading: Icon(Icons.access_time),
                     title: Text('Member Since'),
-                    subtitle: Text('${DateFormat('dd-MM-yyyy').format(currentFirebaseUser!.metadata.creationTime!)}'),
+                    subtitle: Text(
+                        '${DateFormat('dd-MM-yyyy').format(currentFirebaseUser!.metadata.creationTime!)}'),
                   ),
                 ],
               ),

@@ -102,7 +102,7 @@ class _MyDrawerState extends State<MyDrawer> {
                             height: 10,
                           ),
                   Text(
-                    widget.email.toString(),
+                    userProfileDetails?['email']??"-",
                     maxLines: 1, // Set the maximum number of lines to display
                     overflow:
                         TextOverflow.ellipsis, // Define how to handle overflow
