@@ -8,6 +8,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 //import 'package:fda/user/login.dart';
@@ -26,8 +27,9 @@ class UserMainScreen extends StatefulWidget {
   static Map<Object?, Object?>? allActiveOrders;
   static String idOfActiveOrderRider = "";
   static var activeOrderDetails;
-  static var OrderDetailsOfCurrentUser=null;
-   static Set<Polyline> polyline = {};
+  static var OrderDetailsOfCurrentUser = null;
+  static var OrderDetailsOfCurrenRider = null;
+  static Set<Polyline> polyline = {};
   static Set<Marker> markers = {};
   static LatLng sourceLocation = LatLng(37.4219999, -122.0840575);
   static LatLng destinationLocation =
@@ -245,32 +247,47 @@ class _UserMainScreenState extends State<UserMainScreen> {
 
   getAllActiveOrders() async {
     var activeOrders = null;
+    var driverDetails;
     DatabaseReference userReference =
         FirebaseDatabase.instance.ref().child("activeOrders");
-        DatabaseReference currentUserReference =
-        FirebaseDatabase.instance.ref().child("users").child(currentFirebaseUser!.uid);
+    DatabaseReference currentUserReference = FirebaseDatabase.instance
+        .ref()
+        .child("users")
+        .child(currentFirebaseUser!.uid);
+    
     // Get the data once
     DatabaseEvent usersWithOrder = await userReference.once();
     DatabaseEvent currentUserEvent = await currentUserReference.once();
     activeOrders = usersWithOrder.snapshot.value;
     UserMainScreen.OrderDetailsOfCurrentUser = currentUserEvent.snapshot.value;
-    print("Current User Order Details======${UserMainScreen.OrderDetailsOfCurrentUser}");
-    if(activeOrders != null){
-    for (var category in activeOrders?.keys) {
-      if (activeOrders[category]['orderDetails']['id'] ==
-          currentFirebaseUser!.uid) {
-        UserMainScreen.allActiveOrders = activeOrders;
-        UserMainScreen.idOfActiveOrderRider = category;
-        UserMainScreen.activeOrderDetails = activeOrders[category];
-        print("=============Active Order Get Successfully==================");
-        print(UserMainScreen.activeOrderDetails != null);
+    drawPoliline();
 
-        if (activeOrders[category]['orderDetails']['completed'] == true)
-          timer?.cancel();
+    print(
+        "Current User Order Details======${UserMainScreen.OrderDetailsOfCurrentUser}");
+    if (activeOrders != null) {
+      for (var category in activeOrders?.keys) {
+        if (activeOrders[category]['orderDetails']['id'] ==
+            currentFirebaseUser!.uid) {
+          UserMainScreen.allActiveOrders = activeOrders;
+          UserMainScreen.idOfActiveOrderRider = category;
+          UserMainScreen.activeOrderDetails = activeOrders[category];
+          DatabaseReference? ref = FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(activeOrders[category]['orderDetails']['riderId']);
+    DatabaseEvent driverDetailEvent = await ref.once();
+    UserMainScreen.OrderDetailsOfCurrenRider = driverDetailEvent.snapshot.value;
+
+          print("=============Active Order Get Successfully==================");
+          print(UserMainScreen.activeOrderDetails != null);
+          print(UserMainScreen.OrderDetailsOfCurrenRider);
+
+          if (activeOrders[category]['orderDetails']['completed'] == true)
+            timer?.cancel();
+        }
       }
     }
-    }
-        setState(() {});
+    setState(() {});
   }
 
   blackThemeGoogleMap() {
@@ -438,7 +455,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
                     ]
                 ''');
   }
-
+ String _address='';
   @override
   void initState() {
     super.initState();
@@ -450,15 +467,108 @@ class _UserMainScreenState extends State<UserMainScreen> {
     checkIfLocationPermissionAllowed();
   }
 
-updateState(){
-    UserMainScreen.activeOrderDetails=null;
-    UserMainScreen.OrderDetailsOfCurrentUser=null;
-    setState(() {
-      
-    });
-}
-drawPoliline() {
-    var userDetails=UserMainScreen.OrderDetailsOfCurrentUser;
+  updateState() {
+    UserMainScreen.activeOrderDetails = null;
+    UserMainScreen.OrderDetailsOfCurrentUser = null;
+    setState(() {});
+  }
+
+  setSourceLocation() async {
+    DatabaseReference ref = FirebaseDatabase.instance
+        .ref()
+        .child("activeDrivers")
+        .child(currentFirebaseUser!.uid)
+        .child("l");
+    DatabaseEvent driverLocation = await ref.once();
+    var location = driverLocation.snapshot.value as List;
+    UserMainScreen.sourceLocation = LatLng(location[0], location[1]);
+  }
+
+  showDetailOnMakers(title, imageUrl, name, phone, address, asset) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                asset
+                    ? CircleAvatar(
+                        backgroundColor: Colors.black,
+                        radius: 50,
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                      )
+                    : CircleAvatar(
+                        radius: 50,
+                        backgroundImage: NetworkImage(
+                          imageUrl,
+                        ),
+                      ),
+                SizedBox(height: 16),
+                Text(
+                  name, // Set user name
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  address, // Set user address
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "Phone: ${phone}", // Set other user details
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  getAddressFromLatLng(double latitude, double longitude) async {
+    
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(latitude, longitude);
+
+      if (placemarks != null && placemarks.isNotEmpty) {
+        Placemark placemark = placemarks[0];
+          _address = '${placemark.name}, ${placemark.locality}, ${placemark.administrativeArea}';
+          print("Address======${_address}");
+      }
+    } catch (e) {
+    }
+  }
+  drawPoliline() async {
+    setSourceLocation();
+    BitmapDescriptor sourceIcon = await BitmapDescriptor.fromAssetImage(
+      ImageConfiguration(
+          size: Size(10, 10)), // Customize the size of the icon as needed
+      'images/uber_Moto.png', // Path to the asset image file
+    );
+    BitmapDescriptor destinationIcon = await BitmapDescriptor.fromAssetImage(
+      ImageConfiguration(
+          size: Size(10, 10)), // Customize the size of the icon as needed
+      'images/petrol.png', // Path to the asset image file
+    );
+    UserMainScreen.markers.clear();
+    UserMainScreen.polyline.clear();
+    var userDetails = UserMainScreen.OrderDetailsOfCurrentUser;
+    var riderDetails = UserMainScreen.OrderDetailsOfCurrenRider;
     UserMainScreen.destinationLocation = LatLng(
         userDetails['orderDetails']['latitude'],
         userDetails['orderDetails']['longitude']);
@@ -468,20 +578,34 @@ drawPoliline() {
       Marker(
         markerId: MarkerId("source"),
         position: UserMainScreen.sourceLocation,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-        infoWindow: InfoWindow(
-          title: "Source",
-        ),
+        icon: sourceIcon,
+        onTap: () {
+           getAddressFromLatLng(UserMainScreen.sourceLocation.latitude, UserMainScreen.sourceLocation.longitude);
+          var imageUrl = userDetails?['imageUrl'];
+          var name = userDetails['name'];
+          var phone = userDetails['phone'];
+          bool asset = imageUrl !=null ? false:true;
+          
+          showDetailOnMakers(
+              'User Detail', imageUrl, name, phone, _address, asset);
+        },
       ),
     );
     UserMainScreen.markers.add(
       Marker(
-        markerId: MarkerId("destination"),
-        position: UserMainScreen.destinationLocation,
-        infoWindow: InfoWindow(
-          title: "Destination",
-        ),
-      ),
+          markerId: MarkerId("destination"),
+          position: UserMainScreen.destinationLocation,
+          icon: destinationIcon,
+          onTap: () {
+           getAddressFromLatLng(UserMainScreen.destinationLocation.latitude, UserMainScreen.destinationLocation.longitude);
+          var imageUrl = riderDetails?['imageUrl'];
+          var name = riderDetails['name'];
+          var phone = riderDetails['phone'];
+          bool asset = imageUrl !=null ? false:true;
+          
+          showDetailOnMakers(
+              'Rider Detail', imageUrl, name, phone, _address, asset);
+          }),
     );
     UserMainScreen.polyline.add(Polyline(
       polylineId: PolylineId("route1"),
@@ -489,14 +613,16 @@ drawPoliline() {
       width: 10,
       color: Colors.blueAccent,
       endCap: Cap.buttCap,
-      points: [UserMainScreen.sourceLocation, UserMainScreen.destinationLocation],
+      points: [
+        UserMainScreen.sourceLocation,
+        UserMainScreen.destinationLocation
+      ],
     ));
     print('HOME PAGE REFERENCE');
-    setState(() {
-      
-    });
+    setState(() {});
     // Navigator.of(context).pop();
   }
+
   @override
   Widget build(BuildContext context) {
     createActiveNearbyDriverIconMarker();
@@ -507,8 +633,8 @@ drawPoliline() {
         child: Theme(
           data: Theme.of(context).copyWith(canvasColor: Colors.black54),
           child: MyDrawer(
-            name: userModelCurrentInfo?.name??"-",
-            email: userModelCurrentInfo?.email??"-",
+            name: userModelCurrentInfo?.name ?? "-",
+            email: userModelCurrentInfo?.email ?? "-",
           ),
         ),
       ),
@@ -572,7 +698,7 @@ drawPoliline() {
             zoomControlsEnabled: true,
             circles: circlesSet,
             polylines: UserMainScreen.polyline,
-          markers: UserMainScreen.markers,
+            markers: UserMainScreen.markers,
             // polylines: _polyline,
             initialCameraPosition: _kGooglePlex,
             //markers: Set<Marker>.of(_markers),
@@ -591,8 +717,14 @@ drawPoliline() {
             right: 0.0,
             left: 0.0,
             bottom: 0.0,
-            child: UserMainScreen.activeOrderDetails != null || UserMainScreen.OrderDetailsOfCurrentUser != null
-                ? UserMainScreen.activeOrderDetails != null?UserOrderProgress(updateState: updateState,drawPoliline: drawPoliline,):UserOrderPlaced()
+            child: UserMainScreen.activeOrderDetails != null ||
+                    UserMainScreen.OrderDetailsOfCurrentUser != null
+                ? UserMainScreen.activeOrderDetails != null
+                    ? UserOrderProgress(
+                        updateState: updateState,
+                        drawPoliline: drawPoliline,
+                      )
+                    : UserOrderPlaced()
                 : Container(
                     height: 250.0,
                     decoration: BoxDecoration(
