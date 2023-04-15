@@ -8,6 +8,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -553,18 +557,18 @@ class _UserMainScreenState extends State<UserMainScreen> {
     } catch (e) {
     }
   }
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec =
+        await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
+   }
   drawPoliline() async {
     setSourceLocation();
-    BitmapDescriptor sourceIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(
-          size: Size(10, 10)), // Customize the size of the icon as needed
-      'images/uber_Moto.png', // Path to the asset image file
-    );
-    BitmapDescriptor destinationIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(
-          size: Size(10, 10)), // Customize the size of the icon as needed
-      'images/petrol.png', // Path to the asset image file
-    );
+    final Uint8List sourceIcon = await getBytesFromAsset('images/user-marker.png', 200);
+    final Uint8List destinationIcon = await getBytesFromAsset('images/rider-marker.png', 200);
+
     UserMainScreen.markers.clear();
     UserMainScreen.polyline.clear();
     var userDetails = UserMainScreen.OrderDetailsOfCurrentUser;
@@ -578,7 +582,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
       Marker(
         markerId: MarkerId("source"),
         position: UserMainScreen.sourceLocation,
-        icon: sourceIcon,
+        icon: BitmapDescriptor.fromBytes(sourceIcon),
         onTap: () {
            getAddressFromLatLng(UserMainScreen.sourceLocation.latitude, UserMainScreen.sourceLocation.longitude);
           var imageUrl = userDetails?['imageUrl'];
@@ -595,7 +599,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
       Marker(
           markerId: MarkerId("destination"),
           position: UserMainScreen.destinationLocation,
-          icon: destinationIcon,
+          icon: BitmapDescriptor.fromBytes(destinationIcon),
           onTap: () {
            getAddressFromLatLng(UserMainScreen.destinationLocation.latitude, UserMainScreen.destinationLocation.longitude);
           var imageUrl = riderDetails?['imageUrl'];

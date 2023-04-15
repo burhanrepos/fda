@@ -8,7 +8,10 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:timeline_tile/timeline_tile.dart';
-
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import '../../../../global/global.dart';
 import '../home_tab.dart';
 
@@ -121,7 +124,13 @@ String _address = '';
     }
   }
 
-
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec =
+        await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
+   }
     drawPoliline(userDetails)async {
         var riderDetails;
         DatabaseReference? ref = FirebaseDatabase.instance
@@ -130,18 +139,20 @@ String _address = '';
         .child(userDetails['orderDetails']['riderId']);
     DatabaseEvent driverDetailEvent = await ref.once();
     riderDetails = driverDetailEvent.snapshot.value;
+   final Uint8List sourceIcon = await getBytesFromAsset('images/user-marker.png', 200);
+    final Uint8List destinationIcon = await getBytesFromAsset('images/rider-marker.png', 200);
 
 
-        BitmapDescriptor sourceIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(
-          size: Size(10, 10)), // Customize the size of the icon as needed
-      'images/uber_Moto.png', // Path to the asset image file
-    );
-    BitmapDescriptor destinationIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(
-          size: Size(10, 10)), // Customize the size of the icon as needed
-      'images/petrol.png', // Path to the asset image file
-    );
+    //     BitmapDescriptor sourceIcon = await BitmapDescriptor.fromAssetImage(
+    //   ImageConfiguration(
+    //       size: Size(10, 10)), // Customize the size of the icon as needed
+    //   'images/user-marker.png', // Path to the asset image file
+    // );
+    // BitmapDescriptor destinationIcon = await BitmapDescriptor.fromAssetImage(
+    //   ImageConfiguration(
+    //       size: Size(10, 10)), // Customize the size of the icon as needed
+    //   'images/rider-marker.png', // Path to the asset image file
+    // );
     RiderHomeTabPage.destinationLocation = LatLng(
         userDetails['orderDetails']['latitude'],
         userDetails['orderDetails']['longitude']);
@@ -153,7 +164,7 @@ String _address = '';
       Marker(
         markerId: MarkerId("source"),
         position: RiderHomeTabPage.sourceLocation,
-        icon: sourceIcon,
+        icon: BitmapDescriptor.fromBytes(sourceIcon),
         onTap: () {
           getAddressFromLatLng(RiderHomeTabPage.sourceLocation.latitude, RiderHomeTabPage.sourceLocation.longitude);
           var imageUrl = userDetails?['imageUrl'];
@@ -170,7 +181,7 @@ String _address = '';
       Marker(
         markerId: MarkerId("destination"),
         position: RiderHomeTabPage.destinationLocation,
-        icon: destinationIcon,
+        icon: BitmapDescriptor.fromBytes(destinationIcon),
         onTap: () {
           getAddressFromLatLng(RiderHomeTabPage.destinationLocation.latitude, RiderHomeTabPage.destinationLocation.longitude);
           var imageUrl = riderDetails?['imageUrl'];
