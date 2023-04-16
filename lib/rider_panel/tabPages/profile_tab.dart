@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:fda/rider_panel/tabPages/profile_tab/widget/bike_info_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -28,6 +29,12 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
   @override
   initState() {
     getProfileData();
+    //Notification Initialized in component/screen
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed){
+        if(!isAllowed){
+            AwesomeNotifications().requestPermissionToSendNotifications();
+        }
+    });
   }
 
   getProfileData() async {
@@ -62,6 +69,10 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
         actions: [
           driverDetails?['email']!=null?TextButton(
               onPressed: () {
+                // Notifiaction call on edit button
+                // AwesomeNotifications().createNotification(
+                //     content: NotificationContent(id: 10, channelKey: "basic_channel",title: "Edited Details",body: 'Simplem Button')
+                //     );
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {

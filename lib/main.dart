@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:fda/splashScreen/splash_screen.dart';
 import 'package:fda/widgets/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,6 +22,13 @@ MaterialColor primaryColor = MaterialColor(
     800: darkColor.withOpacity(0.9),
     900: darkColor.withOpacity(1.0),
   },
+);
+AwesomeNotifications().initialize(
+    null,
+    [
+        NotificationChannel(channelKey: 'basic_channel', channelName: "Basic Notification", channelDescription: "Notifaicaiton Channel for basic tests")
+    ],
+    debug: true
 );
 
 

@@ -65,6 +65,11 @@ moveToSplashScreen() async{
     });
 }
 @override
+void dispose() {
+    currentUserIsDriverOrClient="";
+    super.dispose();
+  }
+@override
   void initState() {
     // TODO: implement initState
     super.initState();
