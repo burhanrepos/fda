@@ -9,15 +9,12 @@ import '../../../../global/global.dart';
 import '../../../../widgets/constants.dart';
 
 class UserOrderPlaced extends StatefulWidget {
-
   UserOrderPlaced();
   @override
   _UserOrderPlacedState createState() => _UserOrderPlacedState();
 }
 
 class _UserOrderPlacedState extends State<UserOrderPlaced> {
-  
-
   @override
   dispose() {
     super.dispose();
@@ -27,9 +24,20 @@ class _UserOrderPlacedState extends State<UserOrderPlaced> {
   Widget build(BuildContext context) {
     return Scrollbar(
       child: Container(
-        color: Colors.white,
-        height: 300,
-        padding: EdgeInsets.zero,
+        height: 250.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(18.0), topRight: Radius.circular(18.0)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black,
+              blurRadius: 16.0,
+              spreadRadius: 0.5,
+              offset: Offset(0.7, 0.7),
+            ),
+          ],
+        ),
         child: Column(
           children: [
             Text(
@@ -47,17 +55,17 @@ class _UserOrderPlacedState extends State<UserOrderPlaced> {
                     alignment: TimelineAlign.manual,
                     lineXY: 0.1,
                     isFirst: true,
-                    beforeLineStyle: LineStyle(
-                        color: Constants.applicationThemeColor),
+                    beforeLineStyle:
+                        LineStyle(color: Constants.applicationThemeColor),
                     indicatorStyle: IndicatorStyle(
                       color: Constants.applicationThemeColor,
                       iconStyle: IconStyle(
                         color: Colors.white,
-                        iconData:Icons.check,
+                        iconData: Icons.check,
                       ),
                     ),
-                    afterLineStyle: LineStyle(
-                        color: Constants.applicationThemeColor),
+                    afterLineStyle:
+                        LineStyle(color: Constants.applicationThemeColor),
                     endChild: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
@@ -95,24 +103,22 @@ class _UserOrderPlacedState extends State<UserOrderPlaced> {
                   TimelineTile(
                     alignment: TimelineAlign.manual,
                     lineXY: 0.1,
-                    beforeLineStyle: LineStyle(
-                        color:  Colors.grey),
+                    beforeLineStyle: LineStyle(color: Colors.grey),
                     indicatorStyle: IndicatorStyle(
                       color: Colors.grey,
                       iconStyle: IconStyle(
                         color: Colors.white,
-                        iconData:Icons.info_outline,
+                        iconData: Icons.info_outline,
                       ),
                     ),
-                    afterLineStyle: LineStyle(
-                        color: Colors.grey),
+                    afterLineStyle: LineStyle(color: Colors.grey),
                     endChild: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ColorFiltered(
-                        colorFilter:ColorFilter.mode(
-                                    Colors.white,
-                                    BlendMode.saturation,
-                                  ),
+                        colorFilter: ColorFilter.mode(
+                          Colors.white,
+                          BlendMode.saturation,
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -149,24 +155,22 @@ class _UserOrderPlacedState extends State<UserOrderPlaced> {
                   TimelineTile(
                     alignment: TimelineAlign.manual,
                     lineXY: 0.1,
-                    beforeLineStyle: LineStyle(
-                        color: Colors.grey),
+                    beforeLineStyle: LineStyle(color: Colors.grey),
                     indicatorStyle: IndicatorStyle(
                       color: Colors.grey,
                       iconStyle: IconStyle(
                         color: Colors.white,
-                        iconData:Icons.local_shipping,
+                        iconData: Icons.local_shipping,
                       ),
                     ),
-                    afterLineStyle: LineStyle(
-                        color:  Colors.grey),
+                    afterLineStyle: LineStyle(color: Colors.grey),
                     endChild: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ColorFiltered(
                         colorFilter: ColorFilter.mode(
-                                    Colors.white,
-                                    BlendMode.saturation,
-                                  ),
+                          Colors.white,
+                          BlendMode.saturation,
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -204,8 +208,7 @@ class _UserOrderPlacedState extends State<UserOrderPlaced> {
                     alignment: TimelineAlign.manual,
                     lineXY: 0.1,
                     isLast: true,
-                    beforeLineStyle: LineStyle(
-                        color: Colors.grey),
+                    beforeLineStyle: LineStyle(color: Colors.grey),
                     indicatorStyle: IndicatorStyle(
                       color: Colors.grey,
                       iconStyle: IconStyle(
@@ -217,9 +220,9 @@ class _UserOrderPlacedState extends State<UserOrderPlaced> {
                       padding: const EdgeInsets.all(8.0),
                       child: ColorFiltered(
                         colorFilter: ColorFilter.mode(
-                                    Colors.white,
-                                    BlendMode.saturation,
-                                  ),
+                          Colors.white,
+                          BlendMode.saturation,
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [

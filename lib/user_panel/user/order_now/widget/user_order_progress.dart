@@ -19,14 +19,24 @@ class UserOrderProgress extends StatefulWidget {
 }
 
 class _UserOrderProgressState extends State<UserOrderProgress> {
-
   @override
   Widget build(BuildContext context) {
     return Scrollbar(
       child: Container(
-        color: Colors.white,
-        height: 300,
-        padding: EdgeInsets.zero,
+        height: 250.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(18.0), topRight: Radius.circular(18.0)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black,
+              blurRadius: 16.0,
+              spreadRadius: 0.5,
+              offset: Offset(0.7, 0.7),
+            ),
+          ],
+        ),
         child: Column(
           children: [
             Text(
@@ -37,34 +47,33 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                   fontSize: 23),
             ),
             Container(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        widget.drawPoliline();
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            "Locate on map",
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.redAccent),
-                          ),
-                          Icon(
-                            Icons.location_on,
-                            color: Colors.redAccent,
-                          ),
-                        ],
-                      ),
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  widget.drawPoliline();
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      "Locate on map",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.redAccent),
                     ),
-                  ),
+                    Icon(
+                      Icons.location_on,
+                      color: Colors.redAccent,
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  
                   TimelineTile(
                     alignment: TimelineAlign.manual,
                     lineXY: 0.1,

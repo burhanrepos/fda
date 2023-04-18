@@ -1,9 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:fda/rider_panel/tabPages/home_tab/widgets/popup_container.dart';
 import 'package:fda/widgets/constants.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'dart:ui' as ui;
 import '../../../../global/global.dart';
 import '../home_tab.dart';
 
@@ -22,6 +27,8 @@ class UserOrderRequest extends StatefulWidget {
 }
 
 class _UserOrderRequestState extends State<UserOrderRequest> {
+    
+String _address = '';
   displayUserDetails(context, userDetails) {
     return showDialog(
       context: context,
@@ -184,9 +191,9 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
             ElevatedButton(
                 onPressed: () {
                   addOrderToActiveOrders(userDetails);
-                  drawPoliline(context, userDetails);
                   PopupContainer.driverWithActiveOrder = true;
-                  widget.updateState();
+                  drawPoliline(context, userDetails);
+                //   widget.updateState();
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Constants.applicationThemeColor,
@@ -213,30 +220,75 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
       },
     );
   }
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec =
+        await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
+   }
+    drawPoliline(context,userDetails)async {
+        var riderDetails;
+        DatabaseReference? ref = FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(userDetails['orderDetails']['riderId']);
+    DatabaseEvent driverDetailEvent = await ref.once();
+    riderDetails = driverDetailEvent.snapshot.value;
+   final Uint8List sourceIcon = await getBytesFromAsset('images/user-marker.png', 200);
+    final Uint8List destinationIcon = await getBytesFromAsset('images/rider-marker.png', 200);
 
-  drawPoliline(context, userDetails) {
+
+    //     BitmapDescriptor sourceIcon = await BitmapDescriptor.fromAssetImage(
+    //   ImageConfiguration(
+    //       size: Size(10, 10)), // Customize the size of the icon as needed
+    //   'images/user-marker.png', // Path to the asset image file
+    // );
+    // BitmapDescriptor destinationIcon = await BitmapDescriptor.fromAssetImage(
+    //   ImageConfiguration(
+    //       size: Size(10, 10)), // Customize the size of the icon as needed
+    //   'images/rider-marker.png', // Path to the asset image file
+    // );
     RiderHomeTabPage.destinationLocation = LatLng(
         userDetails['orderDetails']['latitude'],
         userDetails['orderDetails']['longitude']);
-    print("Destination =======${RiderHomeTabPage.destinationLocation}");
+    print("Destination Reqeust =======${RiderHomeTabPage.destinationLocation}");
     print("Source =======${RiderHomeTabPage.sourceLocation}");
+    RiderHomeTabPage.markers.clear();
+    RiderHomeTabPage.polyline.clear();
     RiderHomeTabPage.markers.add(
       Marker(
         markerId: MarkerId("source"),
         position: RiderHomeTabPage.sourceLocation,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-        infoWindow: InfoWindow(
-          title: "Source",
-        ),
+        icon: BitmapDescriptor.fromBytes(sourceIcon),
+        onTap: () {
+          getAddressFromLatLng(RiderHomeTabPage.sourceLocation.latitude, RiderHomeTabPage.sourceLocation.longitude);
+          var imageUrl = userDetails?['imageUrl'];
+          var name = userDetails['name'];
+          var phone = userDetails['phone'];
+          bool asset = imageUrl !=null ? false:true;
+          
+          showDetailOnMakers(
+              'User Detail', imageUrl, name, phone, _address, asset);
+        },
       ),
     );
     RiderHomeTabPage.markers.add(
       Marker(
         markerId: MarkerId("destination"),
         position: RiderHomeTabPage.destinationLocation,
-        infoWindow: InfoWindow(
-          title: "Destination",
-        ),
+        icon: BitmapDescriptor.fromBytes(destinationIcon),
+        onTap: () {
+          getAddressFromLatLng(RiderHomeTabPage.destinationLocation.latitude, RiderHomeTabPage.destinationLocation.longitude);
+          var imageUrl = riderDetails?['imageUrl'];
+          var name = riderDetails['name'];
+          var phone = riderDetails['phone'];
+          bool asset = imageUrl !=null ? false:true;
+          
+          showDetailOnMakers(
+              'Rider Detail', imageUrl, name, phone, _address, asset);
+
+        },
       ),
     );
     RiderHomeTabPage.polyline.add(Polyline(
@@ -245,14 +297,83 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
       width: 10,
       color: Colors.blueAccent,
       endCap: Cap.buttCap,
-      points: [
-        RiderHomeTabPage.sourceLocation,
-        RiderHomeTabPage.destinationLocation
-      ],
+      points: [RiderHomeTabPage.sourceLocation, RiderHomeTabPage.destinationLocation],
     ));
     print('HOME PAGE REFERENCE');
     Navigator.of(context).pop();
+    widget.updateState();
   }
+   showDetailOnMakers(title, imageUrl, name, phone, address, asset) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                asset
+                    ? CircleAvatar(
+                        backgroundColor: Colors.black,
+                        radius: 50,
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                      )
+                    : CircleAvatar(
+                        radius: 50,
+                        backgroundImage: NetworkImage(
+                          imageUrl,
+                        ),
+                      ),
+                SizedBox(height: 16),
+                Text(
+                  name, // Set user name
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  address, // Set user address
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "Phone: ${phone}", // Set other user details
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  
+  getAddressFromLatLng(double latitude, double longitude) async {
+    
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(latitude, longitude);
+
+      if (placemarks != null && placemarks.isNotEmpty) {
+        Placemark placemark = placemarks[0];
+          _address = '${placemark.name}, ${placemark.locality}, ${placemark.administrativeArea}';
+          print("Address======${_address}");
+      }
+    } catch (e) {
+    }
+  }
+
 
   addOrderToActiveOrders(userDetails) {
     userDetails['riderId'] = currentFirebaseUser!.uid;
