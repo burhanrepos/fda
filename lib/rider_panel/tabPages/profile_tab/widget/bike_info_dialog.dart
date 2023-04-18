@@ -246,12 +246,12 @@ class _BikeInfoDialogState extends State<BikeInfoDialog> {
                 .set(makeController.value.text);
             ref
                 .child('bike_details')
-                .child('bike_make')
-                .set(makeController.value.text);
+                .child('bike_model')
+                .set(modelController.value.text);
             ref
                 .child('bike_details')
-                .child('bike_make')
-                .set(makeController.value.text);
+                .child('bike_number')
+                .set(licensePlateController.value.text);
             Navigator.pop(context);
             widget.updateState();
             // getUserData();
