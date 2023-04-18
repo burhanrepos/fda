@@ -19,11 +19,6 @@ class UserOrderProgress extends StatefulWidget {
 }
 
 class _UserOrderProgressState extends State<UserOrderProgress> {
-  @override
-  dispose() {
-    UserMainScreen.activeOrderDetails = null;
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

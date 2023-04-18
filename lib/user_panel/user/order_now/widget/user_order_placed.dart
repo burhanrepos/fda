@@ -21,7 +21,6 @@ class _UserOrderPlacedState extends State<UserOrderPlaced> {
   @override
   dispose() {
     super.dispose();
-    UserMainScreen.activeOrderDetails = null;
   }
 
   @override

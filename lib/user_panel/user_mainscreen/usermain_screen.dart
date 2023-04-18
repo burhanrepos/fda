@@ -252,22 +252,23 @@ class _UserMainScreenState extends State<UserMainScreen> {
   getAllActiveOrders() async {
     var activeOrders = null;
     var driverDetails;
+    var userDetails;
     DatabaseReference userReference =
         FirebaseDatabase.instance.ref().child("activeOrders");
     DatabaseReference currentUserReference = FirebaseDatabase.instance
         .ref()
         .child("users")
         .child(currentFirebaseUser!.uid);
-    
+
     // Get the data once
     DatabaseEvent usersWithOrder = await userReference.once();
     DatabaseEvent currentUserEvent = await currentUserReference.once();
     activeOrders = usersWithOrder.snapshot.value;
-    UserMainScreen.OrderDetailsOfCurrentUser = currentUserEvent.snapshot.value;
-    drawPoliline();
-
+    // UserMainScreen.OrderDetailsOfCurrentUser = currentUserEvent.snapshot.value;
+    userDetails =currentUserEvent.snapshot.value;
+    if(userDetails['orderDetails'] != null) UserMainScreen.OrderDetailsOfCurrentUser = userDetails;
     print(
-        "Current User Order Details======${UserMainScreen.OrderDetailsOfCurrentUser}");
+        "Current User Order Details======${userDetails['orderDetails'] }");
     if (activeOrders != null) {
       for (var category in activeOrders?.keys) {
         if (activeOrders[category]['orderDetails']['id'] ==
@@ -276,15 +277,17 @@ class _UserMainScreenState extends State<UserMainScreen> {
           UserMainScreen.idOfActiveOrderRider = category;
           UserMainScreen.activeOrderDetails = activeOrders[category];
           DatabaseReference? ref = FirebaseDatabase.instance
-        .ref()
-        .child("drivers")
-        .child(activeOrders[category]['orderDetails']['riderId']);
-    DatabaseEvent driverDetailEvent = await ref.once();
-    UserMainScreen.OrderDetailsOfCurrenRider = driverDetailEvent.snapshot.value;
+              .ref()
+              .child("drivers")
+              .child(activeOrders[category]['orderDetails']['riderId']);
+          DatabaseEvent driverDetailEvent = await ref.once();
+          UserMainScreen.OrderDetailsOfCurrenRider =
+              driverDetailEvent.snapshot.value;
 
           print("=============Active Order Get Successfully==================");
           print(UserMainScreen.activeOrderDetails != null);
           print(UserMainScreen.OrderDetailsOfCurrenRider);
+          drawPoliline();
 
           if (activeOrders[category]['orderDetails']['completed'] == true)
             timer?.cancel();
@@ -459,13 +462,15 @@ class _UserMainScreenState extends State<UserMainScreen> {
                     ]
                 ''');
   }
- String _address='';
+
+  String _address = '';
   @override
   void initState() {
     super.initState();
     print("CUrrent User Info");
     print(userModelCurrentInfo);
     print(currentFirebaseUser!.uid);
+    getAllActiveOrders();
     timer = Timer.periodic(
         Duration(seconds: 15), (Timer t) => getAllActiveOrders());
     checkIfLocationPermissionAllowed();
@@ -474,6 +479,9 @@ class _UserMainScreenState extends State<UserMainScreen> {
   updateState() {
     UserMainScreen.activeOrderDetails = null;
     UserMainScreen.OrderDetailsOfCurrentUser = null;
+    UserMainScreen.OrderDetailsOfCurrenRider = null;
+    UserMainScreen.markers.clear();
+    UserMainScreen.polyline.clear();
     setState(() {});
   }
 
@@ -543,31 +551,37 @@ class _UserMainScreenState extends State<UserMainScreen> {
       },
     );
   }
+
   getAddressFromLatLng(double latitude, double longitude) async {
-    
     try {
       List<Placemark> placemarks =
           await placemarkFromCoordinates(latitude, longitude);
 
       if (placemarks != null && placemarks.isNotEmpty) {
         Placemark placemark = placemarks[0];
-          _address = '${placemark.name}, ${placemark.locality}, ${placemark.administrativeArea}';
-          print("Address======${_address}");
+        _address =
+            '${placemark.name}, ${placemark.locality}, ${placemark.administrativeArea}';
+        print("Address======${_address}");
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
+
   Future<Uint8List> getBytesFromAsset(String path, int width) async {
     ByteData data = await rootBundle.load(path);
-    ui.Codec codec =
-        await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
-   }
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
+  }
+
   drawPoliline() async {
     setSourceLocation();
-    final Uint8List sourceIcon = await getBytesFromAsset('images/user-marker.png', 200);
-    final Uint8List destinationIcon = await getBytesFromAsset('images/rider-marker.png', 200);
+    final Uint8List sourceIcon =
+        await getBytesFromAsset('images/user-marker.png', 200);
+    final Uint8List destinationIcon =
+        await getBytesFromAsset('images/rider-marker.png', 200);
 
     UserMainScreen.markers.clear();
     UserMainScreen.polyline.clear();
@@ -584,12 +598,13 @@ class _UserMainScreenState extends State<UserMainScreen> {
         position: UserMainScreen.sourceLocation,
         icon: BitmapDescriptor.fromBytes(sourceIcon),
         onTap: () {
-           getAddressFromLatLng(UserMainScreen.sourceLocation.latitude, UserMainScreen.sourceLocation.longitude);
+          getAddressFromLatLng(UserMainScreen.sourceLocation.latitude,
+              UserMainScreen.sourceLocation.longitude);
           var imageUrl = userDetails?['imageUrl'];
           var name = userDetails['name'];
           var phone = userDetails['phone'];
-          bool asset = imageUrl !=null ? false:true;
-          
+          bool asset = imageUrl != null ? false : true;
+
           showDetailOnMakers(
               'User Detail', imageUrl, name, phone, _address, asset);
         },
@@ -601,14 +616,15 @@ class _UserMainScreenState extends State<UserMainScreen> {
           position: UserMainScreen.destinationLocation,
           icon: BitmapDescriptor.fromBytes(destinationIcon),
           onTap: () {
-           getAddressFromLatLng(UserMainScreen.destinationLocation.latitude, UserMainScreen.destinationLocation.longitude);
-          var imageUrl = riderDetails?['imageUrl'];
-          var name = riderDetails['name'];
-          var phone = riderDetails['phone'];
-          bool asset = imageUrl !=null ? false:true;
-          
-          showDetailOnMakers(
-              'Rider Detail', imageUrl, name, phone, _address, asset);
+            getAddressFromLatLng(UserMainScreen.destinationLocation.latitude,
+                UserMainScreen.destinationLocation.longitude);
+            var imageUrl = riderDetails?['imageUrl'];
+            var name = riderDetails['name'];
+            var phone = riderDetails['phone'];
+            bool asset = imageUrl != null ? false : true;
+
+            showDetailOnMakers(
+                'Rider Detail', imageUrl, name, phone, _address, asset);
           }),
     );
     UserMainScreen.polyline.add(Polyline(
@@ -721,16 +737,18 @@ class _UserMainScreenState extends State<UserMainScreen> {
             right: 0.0,
             left: 0.0,
             bottom: 0.0,
-            child: UserMainScreen.activeOrderDetails != null 
-            // ||
-                    // UserMainScreen.OrderDetailsOfCurrentUser != null
-                ? UserMainScreen.activeOrderDetails != null
-                    ? UserOrderProgress(
+            child: UserMainScreen.activeOrderDetails != null
+            //  ||
+            //         UserMainScreen.OrderDetailsOfCurrentUser != null
+                ? 
+                // UserMainScreen.activeOrderDetails != null
+                //     ? 
+                    UserOrderProgress(
                         updateState: updateState,
                         drawPoliline: drawPoliline,
                       )
-                    : UserOrderPlaced()
-                : Container(
+                    // : UserOrderPlaced()
+                : UserMainScreen.OrderDetailsOfCurrentUser != null?UserOrderPlaced():Container(
                     height: 250.0,
                     decoration: BoxDecoration(
                       color: Colors.white,

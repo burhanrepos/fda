@@ -264,6 +264,7 @@ class _RiderHomeTabPageState extends State<RiderHomeTabPage> {
   @override
   void initState() {
     super.initState();
+    getAllOrders();
     timer = Timer.periodic(Duration(seconds: 15), (Timer t) => getAllOrders());
     // getAllOrders();
     setSourceLocation();

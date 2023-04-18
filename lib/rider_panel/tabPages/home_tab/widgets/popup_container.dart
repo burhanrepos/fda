@@ -36,6 +36,7 @@ class _PopupContainerState extends State<PopupContainer>
   @override
   void initState() {
     super.initState();
+    checkDriverWithOrder();
     timer = Timer.periodic(
         const Duration(seconds: 10), (Timer t) => checkDriverWithOrder());
     // checkDriverWithOrder();

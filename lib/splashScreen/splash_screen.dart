@@ -75,7 +75,9 @@ void dispose() {
     super.initState();
 
     moveToSplashScreen();
+    Future.delayed(Duration(seconds: 2), (){
     startTimer();
+});
   }
   @override
   Widget build(BuildContext context) {

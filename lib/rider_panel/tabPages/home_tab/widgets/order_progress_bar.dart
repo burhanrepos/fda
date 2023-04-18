@@ -37,6 +37,7 @@ String _address = '';
      @override
   void initState() {
     super.initState();
+    getCurrentOrderStatus();
     timer = Timer.periodic(
         Duration(seconds: 15), (Timer t) => getCurrentOrderStatus());
         setState(() {
