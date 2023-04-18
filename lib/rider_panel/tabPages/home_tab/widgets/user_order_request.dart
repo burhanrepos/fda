@@ -193,7 +193,7 @@ String _address = '';
                   addOrderToActiveOrders(userDetails);
                   PopupContainer.driverWithActiveOrder = true;
                   drawPoliline(context, userDetails);
-                //   widget.updateState();
+                  widget.updateState();
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Constants.applicationThemeColor,
@@ -300,8 +300,8 @@ String _address = '';
       points: [RiderHomeTabPage.sourceLocation, RiderHomeTabPage.destinationLocation],
     ));
     print('HOME PAGE REFERENCE');
-    Navigator.of(context).pop();
     widget.updateState();
+    Navigator.of(context).pop();
   }
    showDetailOnMakers(title, imageUrl, name, phone, address, asset) {
     showDialog(
