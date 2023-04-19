@@ -29,12 +29,6 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
   @override
   initState() {
     getProfileData();
-    //Notification Initialized in component/screen
-    AwesomeNotifications().isNotificationAllowed().then((isAllowed){
-        if(!isAllowed){
-            AwesomeNotifications().requestPermissionToSendNotifications();
-        }
-    });
   }
 
   getProfileData() async {
@@ -69,10 +63,6 @@ class _RiderProfileTabPageState extends State<RiderProfileTabPage> {
         actions: [
           driverDetails?['email']!=null?TextButton(
               onPressed: () {
-                // Notifiaction call on edit button
-                // AwesomeNotifications().createNotification(
-                //     content: NotificationContent(id: 10, channelKey: "basic_channel",title: "Edited Details",body: 'Simplem Button')
-                //     );
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {

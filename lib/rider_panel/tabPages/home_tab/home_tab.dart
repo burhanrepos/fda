@@ -463,7 +463,7 @@ class _RiderHomeTabPageState extends State<RiderHomeTabPage> {
     ref = null;
     Future.delayed(const Duration(milliseconds: 2000), () {
       //SystemChannels.platform.invokeMethod("SystemNavigator.pop");
-      SystemNavigator.pop();
+    //   SystemNavigator.pop();
     });
   }
 }

@@ -114,6 +114,8 @@ SaveOrder(){
       "Address":_address,
       "orderStatus":"orderPlaced",
       "orderDate": DateFormat('MM-dd-yyyy').format(DateTime.now()),
+      "userNotification":false,
+      "riderNotification":true
     };
     DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
     driversRef.child(currentFirebaseUser!.uid).child("orderDetails").set(userOrder);

@@ -75,7 +75,7 @@ void dispose() {
     super.initState();
 
     moveToSplashScreen();
-    Future.delayed(Duration(seconds: 2), (){
+    Future.delayed(Duration(seconds: 3), (){
     startTimer();
 });
   }

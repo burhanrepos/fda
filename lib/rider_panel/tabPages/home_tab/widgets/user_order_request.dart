@@ -300,8 +300,8 @@ String _address = '';
       points: [RiderHomeTabPage.sourceLocation, RiderHomeTabPage.destinationLocation],
     ));
     print('HOME PAGE REFERENCE');
-    widget.updateState();
     Navigator.of(context).pop();
+    widget.updateState();
   }
    showDetailOnMakers(title, imageUrl, name, phone, address, asset) {
     showDialog(
@@ -384,6 +384,7 @@ String _address = '';
     userDetails['orderDetails']['completed'] = false;
     userDetails['orderDetails']['received'] = false;
     userDetails['orderDetails']['riderId'] = currentFirebaseUser!.uid;
+    userDetails['orderDetails']['userNotification'] = true;
     DatabaseReference? ref = FirebaseDatabase.instance
         .ref()
         .child("activeOrders")

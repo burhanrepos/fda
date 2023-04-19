@@ -7,6 +7,12 @@ import 'package:flutter/material.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  //Notification Initialized in component/screen
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed){
+        if(!isAllowed){
+            AwesomeNotifications().requestPermissionToSendNotifications();
+        }
+    });
   Color darkColor = Constants.applicationThemeColor;
 MaterialColor primaryColor = MaterialColor(
   darkColor.value,
