@@ -13,7 +13,9 @@
        <meta-data
            android:name="flutterEmbedding"
            android:value="2" />
-
+<meta-data
+    android:name="com.google.firebase.messaging.default_notification_icon"
+    android:resource="@drawable/appicon" />
        <meta-data android:name="com.google.android.geo.API_KEY"
            android:value="AIzaSyCmnV9YatIfHq_mihV0nJe6tP0Hf2CJpFc"/>
         <activity
