@@ -385,6 +385,8 @@ String _address = '';
     userDetails['orderDetails']['received'] = false;
     userDetails['orderDetails']['riderId'] = currentFirebaseUser!.uid;
     userDetails['orderDetails']['userNotification'] = true;
+    userDetails['orderDetails']['notificationTitle'] = "Active Order status";
+    userDetails['orderDetails']['notificationDescription'] = "Your order has been confirmed.";
     DatabaseReference? ref = FirebaseDatabase.instance
         .ref()
         .child("activeOrders")

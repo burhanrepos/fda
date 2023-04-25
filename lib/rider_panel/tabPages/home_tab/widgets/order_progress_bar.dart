@@ -218,7 +218,9 @@ class _OrderProgressBarState extends State<OrderProgressBar> {
 
   orderProcessed(userDetails) {
     userDetails['orderDetails']['processed'] = true;
-    userDetails['orderDetails']['userNotification'] == true;
+    userDetails['orderDetails']['userNotification'] = true;
+    userDetails['orderDetails']['notificationTitle'] = "Active Order status";
+    userDetails['orderDetails']['notificationDescription'] = "Your order has been processed.";
     orderRefrence.child(currentFirebaseUser!.uid).set(userDetails);
 
     setState(() {});
@@ -226,12 +228,18 @@ class _OrderProgressBarState extends State<OrderProgressBar> {
 
   orderDelivered(userDetails) {
     userDetails['orderDetails']['delivered'] = true;
+    userDetails['orderDetails']['userNotification'] = true;
+    userDetails['orderDetails']['notificationTitle'] = "Active Order status";
+    userDetails['orderDetails']['notificationDescription'] = "Your order is now ready for delivery";
     orderRefrence.child(currentFirebaseUser!.uid).set(userDetails);
     setState(() {});
   }
 
   orderCompleted(userDetails) {
     userDetails['orderDetails']['completed'] = true;
+    userDetails['orderDetails']['userNotification'] = true;
+    userDetails['orderDetails']['notificationTitle'] = "Active Order status";
+    userDetails['orderDetails']['notificationDescription'] = "Your order has been delivered";
     orderRefrence.child(currentFirebaseUser!.uid).set(userDetails);
     removeOrderFromUser(userDetails);
     setState(() {});
@@ -252,6 +260,10 @@ class _OrderProgressBarState extends State<OrderProgressBar> {
   orderRemovedFromActiveOrder(userDetails) async {
     DatabaseReference ref =
         FirebaseDatabase.instance.ref().child("completedOrder").push();
+        
+    userDetails['orderDetails']['userNotification'] = true;
+    userDetails['orderDetails']['notificationTitle'] = "Active Order status";
+    userDetails['orderDetails']['notificationDescription'] = "Your order has been completed";
     ref.set(userDetails['orderDetails']);
     orderRefrence.child(currentFirebaseUser!.uid).remove();
     PopupContainer.currentRiderOrderInProgress = null;

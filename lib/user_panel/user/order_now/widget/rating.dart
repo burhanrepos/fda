@@ -20,7 +20,10 @@ class _UserRatingState extends State<UserRating> {
   DatabaseReference orderRefrence =
       FirebaseDatabase.instance.ref().child("activeOrders");
   orderCompleted(userDetails) {
-    userDetails['orderDetails']['received'] = true;
+    userDetails['orderDetails']['received'] = true;  
+    userDetails['orderDetails']['riderNotification'] = true;
+    userDetails['orderDetails']['notificationTitle'] = "Active Order status";
+    userDetails['orderDetails']['notificationDescription'] = "You have completed your order";
     orderRefrence.child(userDetails['riderId']).set(userDetails);
     dispose();
     widget.updateState();

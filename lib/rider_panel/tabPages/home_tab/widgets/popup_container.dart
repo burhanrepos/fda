@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:fda/rider_panel/tabPages/home_tab/widgets/order_progress_bar.dart';
 import 'package:fda/rider_panel/tabPages/home_tab/widgets/user_order_request.dart';
 import 'package:fda/widgets/constants.dart';
@@ -56,6 +57,25 @@ class _PopupContainerState extends State<PopupContainer>
         await orderRefrence.child(currentFirebaseUser!.uid).once();
     PopupContainer.currentRiderOrderInProgress =
         driverOrderEvent.snapshot.value;
+                if (PopupContainer.currentRiderOrderInProgress['orderDetails']['riderNotification'] ==
+                true) {
+              PopupContainer.currentRiderOrderInProgress['orderDetails']['riderNotification'] = false;
+              var notificationTitle = PopupContainer.currentRiderOrderInProgress['orderDetails']['notificationTitle'] ;
+              var notificationDesc = PopupContainer.currentRiderOrderInProgress['orderDetails']['notificationDescription'] ;
+          orderRefrence.child(currentFirebaseUser!.uid).set(PopupContainer.currentRiderOrderInProgress);
+          print("=============Active User ORder===${PopupContainer.currentRiderOrderInProgress}");
+
+        //   Notifiaction call on edit button
+          AwesomeNotifications().createNotification(
+              content: NotificationContent(
+            id: 10,
+            channelKey: "basic_channel",
+            title: notificationTitle,
+            body: notificationDesc,
+            bigPicture: "images/petrol.png",
+            largeIcon: "images/petrol.png"
+          ));
+            }
     print("Order In Progress=============-----------------");
     print(PopupContainer.currentRiderOrderInProgress);
   }

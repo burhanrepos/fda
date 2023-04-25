@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:fda/global/global.dart';
 import 'package:fda/user_panel/user/order_now/orderNow.dart';
 import 'package:fda/user_panel/user/order_now/widget/user_order_progress.dart';
@@ -21,6 +22,9 @@ import 'package:flutter/services.dart';
 import '../../assistants/assistant_methods.dart';
 import '../../assistants/geofire_assistant.dart';
 import 'package:fda/models/active_nearby_available_drivers.dart';
+
+
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 import '../user/order_now/widget/user_order_placed.dart';
 
@@ -188,6 +192,8 @@ class _UserMainScreenState extends State<UserMainScreen> {
       Completer<GoogleMapController>();
   GoogleMapController? newGoogleMapController;
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  DatabaseReference orderRefrence =
+      FirebaseDatabase.instance.ref().child("activeOrders");
 
   // late Position currentPosition;
   // var geoLocator= Geolocator();
@@ -265,10 +271,10 @@ class _UserMainScreenState extends State<UserMainScreen> {
     DatabaseEvent currentUserEvent = await currentUserReference.once();
     activeOrders = usersWithOrder.snapshot.value;
     // UserMainScreen.OrderDetailsOfCurrentUser = currentUserEvent.snapshot.value;
-    userDetails =currentUserEvent.snapshot.value;
-    if(userDetails['orderDetails'] != null) UserMainScreen.OrderDetailsOfCurrentUser = userDetails;
-    print(
-        "Current User Order Details======${userDetails['orderDetails'] }");
+    userDetails = currentUserEvent.snapshot.value;
+    if (userDetails['orderDetails'] != null)
+      UserMainScreen.OrderDetailsOfCurrentUser = userDetails;
+    print("Current User Order Details======${userDetails['orderDetails']}");
     if (activeOrders != null) {
       for (var category in activeOrders?.keys) {
         if (activeOrders[category]['orderDetails']['id'] ==
@@ -285,10 +291,26 @@ class _UserMainScreenState extends State<UserMainScreen> {
               driverDetailEvent.snapshot.value;
 
           print("=============Active Order Get Successfully==================");
-          print(UserMainScreen.activeOrderDetails != null);
-          print(UserMainScreen.OrderDetailsOfCurrenRider);
           drawPoliline();
+            if (activeOrders[category]['orderDetails']['userNotification'] ==
+                true) {
+              activeOrders[category]['orderDetails']['userNotification'] = false;
+              var notificationTitle = activeOrders[category]['orderDetails']['notificationTitle'] ;
+              var notificationDesc = activeOrders[category]['orderDetails']['notificationDescription'] ;
+          orderRefrence.child(activeOrders[category]['riderId']).set(activeOrders[category]);
+          print("=============Active Details===${activeOrders[category]['riderId']}");
 
+        //   Notifiaction call on edit button
+          AwesomeNotifications().createNotification(
+              content: NotificationContent(
+            id: 10,
+            channelKey: "basic_channel",
+            title: notificationTitle,
+            body: notificationDesc,
+            bigPicture: "images/petrol.png",
+            largeIcon: "images/petrol.png"
+          ));
+            }
           if (activeOrders[category]['orderDetails']['completed'] == true)
             timer?.cancel();
         }
@@ -738,137 +760,140 @@ class _UserMainScreenState extends State<UserMainScreen> {
             left: 0.0,
             bottom: 0.0,
             child: UserMainScreen.activeOrderDetails != null
-            //  ||
-            //         UserMainScreen.OrderDetailsOfCurrentUser != null
-                ? 
+                //  ||
+                //         UserMainScreen.OrderDetailsOfCurrentUser != null
+                ?
                 // UserMainScreen.activeOrderDetails != null
-                //     ? 
-                    UserOrderProgress(
-                        updateState: updateState,
-                        drawPoliline: drawPoliline,
-                      )
-                    // : UserOrderPlaced()
-                : UserMainScreen.OrderDetailsOfCurrentUser != null?UserOrderPlaced():Container(
-                    height: 250.0,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(18.0),
-                          topRight: Radius.circular(18.0)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black,
-                          blurRadius: 16.0,
-                          spreadRadius: 0.5,
-                          offset: Offset(0.7, 0.7),
+                //     ?
+                UserOrderProgress(
+                    updateState: updateState,
+                    drawPoliline: drawPoliline,
+                  )
+                // : UserOrderPlaced()
+                : UserMainScreen.OrderDetailsOfCurrentUser != null
+                    ? UserOrderPlaced()
+                    : Container(
+                        height: 250.0,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(18.0),
+                              topRight: Radius.circular(18.0)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black,
+                              blurRadius: 16.0,
+                              spreadRadius: 0.5,
+                              offset: Offset(0.7, 0.7),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14.0, vertical: 10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 6.0),
-                          Text(
-                            "Hi There",
-                            style: TextStyle(fontSize: 12.0),
-                          ),
-                          Text(
-                            "We got your current location!",
-                            style: TextStyle(
-                                fontSize: 20.0, fontFamily: "Brand-Bold"),
-                          ),
-                          SizedBox(height: 20.0),
-                          GestureDetector(
-                            onTap: () {
-                              // Navigator.push(context,MaterialPageRoute(builder: (context)=>SearchScreen()));
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(2.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.white70,
-                                    blurRadius: 6.0,
-                                    spreadRadius: 0.5,
-                                    offset: Offset(0.7, 0.7),
-                                  ),
-                                ],
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14.0, vertical: 10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 6.0),
+                              Text(
+                                "Hi There",
+                                style: TextStyle(fontSize: 12.0),
                               ),
-                              child: ElevatedButton(
+                              Text(
+                                "We got your current location!",
+                                style: TextStyle(
+                                    fontSize: 20.0, fontFamily: "Brand-Bold"),
+                              ),
+                              SizedBox(height: 20.0),
+                              GestureDetector(
+                                onTap: () {
+                                  // Navigator.push(context,MaterialPageRoute(builder: (context)=>SearchScreen()));
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.circular(2.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.white70,
+                                        blurRadius: 6.0,
+                                        spreadRadius: 0.5,
+                                        offset: Offset(0.7, 0.7),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      locatePosition();
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.location_on,
+                                          color: Colors.grey,
+                                        ),
+                                        SizedBox(
+                                          width: 4,
+                                        ),
+                                        Text(
+                                            "Want to reget your current location!"),
+                                      ],
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // DividerWidget(),
+
+                              //Elevated button use krna ha
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              DividerWidget(),
+                              SizedBox(
+                                height: 16.0,
+                              ),
+                              ElevatedButton(
                                 onPressed: () {
-                                  locatePosition();
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => OrderNow()));
                                 },
                                 child: Row(
                                   children: [
                                     Icon(
-                                      Icons.location_on,
+                                      Icons.shopping_cart,
                                       color: Colors.grey,
                                     ),
                                     SizedBox(
-                                      width: 4,
+                                      width: 12.0,
                                     ),
-                                    Text(
-                                        "Want to reget your current location!"),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        //   Text("Order Now ",style: TextStyle(fontSize: 12.0),),
+                                        SizedBox(height: 4.0),
+                                        Text(
+                                          "Order Now!",
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              fontFamily: "Brand-Bold"),
+                                        ),
+                                        // SizedBox(height: 20.0),
+                                      ],
+                                    ),
                                   ],
                                 ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.black,
                                 ),
                               ),
-                            ),
-                          ),
-                          // DividerWidget(),
 
-                          //Elevated button use krna ha
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          DividerWidget(),
-                          SizedBox(
-                            height: 16.0,
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => OrderNow()));
-                            },
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.shopping_cart,
-                                  color: Colors.grey,
-                                ),
-                                SizedBox(
-                                  width: 12.0,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    //   Text("Order Now ",style: TextStyle(fontSize: 12.0),),
-                                    SizedBox(height: 4.0),
-                                    Text(
-                                      "Order Now!",
-                                      style: TextStyle(
-                                          fontSize: 12.0,
-                                          fontFamily: "Brand-Bold"),
-                                    ),
-                                    // SizedBox(height: 20.0),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
-                            ),
-                          ),
-
-                          /* Row(
+                              /* Row(
                  children: [
                   Icon(Icons.shopping_cart,color: Colors.grey,),
                   SizedBox(width: 12.0,),
@@ -883,10 +908,10 @@ class _UserMainScreenState extends State<UserMainScreen> {
     ),
         ],
         ),*/
-                        ],
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
           ),
           Positioned(
             top: 30,

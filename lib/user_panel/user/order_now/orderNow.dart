@@ -115,7 +115,9 @@ SaveOrder(){
       "orderStatus":"orderPlaced",
       "orderDate": DateFormat('MM-dd-yyyy').format(DateTime.now()),
       "userNotification":false,
-      "riderNotification":true
+      "riderNotification":true,
+      "notificationTitle":"New order has been placed!",
+      "notificationDescription":"Check out new orders!"
     };
     DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
     driversRef.child(currentFirebaseUser!.uid).child("orderDetails").set(userOrder);
