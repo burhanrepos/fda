@@ -15,6 +15,13 @@ class UserOrderPlaced extends StatefulWidget {
 }
 
 class _UserOrderPlacedState extends State<UserOrderPlaced> {
+  DatabaseReference userReference = FirebaseDatabase.instance
+      .ref()
+      .child("users")
+      .child(currentFirebaseUser!.uid);
+      DatabaseReference orderRefrence =
+      FirebaseDatabase.instance.ref().child("activeOrders").child(currentFirebaseUser!.uid);
+  bool currentOrderIsNotAcceptedYet = true;
   @override
   dispose() {
     super.dispose();
@@ -47,6 +54,38 @@ class _UserOrderPlacedState extends State<UserOrderPlaced> {
                   fontWeight: FontWeight.bold,
                   fontSize: 23),
             ),
+            currentOrderIsNotAcceptedYet?Container(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () async {
+                  Map usersDetails;
+                  var activeOrder;
+                  DatabaseEvent usersWithOrder = await userReference.once();
+                  usersDetails = usersWithOrder.snapshot.value as Map;
+                  DatabaseEvent usersWithOrderInActiveOrderArray = await orderRefrence.once();
+                  activeOrder = usersWithOrderInActiveOrderArray.snapshot.value ;
+                if(activeOrder==null){
+                  usersDetails.remove('orderDetails');
+                  userReference.set(usersDetails);
+                  currentOrderIsNotAcceptedYet = false;
+                  print(
+                      'User Cancel ORder${usersDetails}');
+                }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      "Cancel Order",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.redAccent),
+                    )
+                  ],
+                ),
+              ),
+            ):Container(),
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,

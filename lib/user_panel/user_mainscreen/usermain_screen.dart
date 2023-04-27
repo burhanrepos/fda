@@ -274,6 +274,8 @@ class _UserMainScreenState extends State<UserMainScreen> {
     userDetails = currentUserEvent.snapshot.value;
     if (userDetails['orderDetails'] != null)
       UserMainScreen.OrderDetailsOfCurrentUser = userDetails;
+    else
+      UserMainScreen.OrderDetailsOfCurrentUser = null;
     print("Current User Order Details======${userDetails['orderDetails']}");
     if (activeOrders != null) {
       for (var category in activeOrders?.keys) {
