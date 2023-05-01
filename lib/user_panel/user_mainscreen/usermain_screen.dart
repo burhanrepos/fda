@@ -603,9 +603,9 @@ class _UserMainScreenState extends State<UserMainScreen> {
   drawPoliline() async {
     setSourceLocation();
     final Uint8List sourceIcon =
-        await getBytesFromAsset('images/user-marker.png', 200);
+        await getBytesFromAsset('images/user-marker.png', 100);
     final Uint8List destinationIcon =
-        await getBytesFromAsset('images/rider-marker.png', 200);
+        await getBytesFromAsset('images/rider-marker.png', 100);
 
     UserMainScreen.markers.clear();
     UserMainScreen.polyline.clear();
@@ -654,7 +654,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
     UserMainScreen.polyline.add(Polyline(
       polylineId: PolylineId("route1"),
       visible: true,
-      width: 10,
+      width: 3,
       color: Colors.blueAccent,
       endCap: Cap.buttCap,
       points: [
