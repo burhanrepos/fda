@@ -117,7 +117,8 @@ SaveOrder(){
       "userNotification":false,
       "riderNotification":true,
       "notificationTitle":"New order has been placed!",
-      "notificationDescription":"Check out new orders!"
+      "notificationDescription":"Check out new orders!",
+      "accepted":false
     };
     DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
     driversRef.child(currentFirebaseUser!.uid).child("orderDetails").set(userOrder);

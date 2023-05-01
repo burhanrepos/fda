@@ -376,6 +376,13 @@ String _address = '';
 
 
   addOrderToActiveOrders(userDetails) {
+    userDetails['orderDetails']['accepted'] = true;
+
+    DatabaseReference? userRef = FirebaseDatabase.instance
+        .ref()
+        .child("users")
+        .child(userDetails['orderDetails']['id']);
+    userRef.set(userDetails);
     userDetails['riderId'] = currentFirebaseUser!.uid;
     userDetails['orderDetails']['placed'] = true;
     userDetails['orderDetails']['accept'] = true;

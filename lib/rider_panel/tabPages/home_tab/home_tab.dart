@@ -403,7 +403,9 @@ class _RiderHomeTabPageState extends State<RiderHomeTabPage> {
       RiderHomeTabPage.allUser = [];
       for (var category in usersDetails.keys) {
         if (usersDetails[category]['orderDetails'] != null) {
-          RiderHomeTabPage.allUser.add(usersDetails[category]);
+          if (!usersDetails[category]['orderDetails']['accepted']) {
+            RiderHomeTabPage.allUser.add(usersDetails[category]);
+          }
         }
       }
       if (RiderHomeTabPage.allUser.length > 0 &&
@@ -463,7 +465,7 @@ class _RiderHomeTabPageState extends State<RiderHomeTabPage> {
     ref = null;
     Future.delayed(const Duration(milliseconds: 2000), () {
       //SystemChannels.platform.invokeMethod("SystemNavigator.pop");
-    //   SystemNavigator.pop();
+      //   SystemNavigator.pop();
     });
   }
 }
