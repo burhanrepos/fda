@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 10,),
 
               const Text(
-                "Login as a Driver",
+                "Login as a Rider",
                 style: TextStyle(
                   fontSize: 26,
                   color: Colors.grey,
