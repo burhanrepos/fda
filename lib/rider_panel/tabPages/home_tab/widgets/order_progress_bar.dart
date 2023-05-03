@@ -364,10 +364,13 @@ class _OrderProgressBarState extends State<OrderProgressBar> {
                                   fontSize: 18,
                                 ),
                               ),
-                              Text(
-                                'We have recieved your order',
-                                style: TextStyle(
-                                  fontSize: 16,
+                              Container(
+                                width: MediaQuery.of(context).size.width*0.64,
+                                child: Text(
+                                  'Customer order received',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                             ],
@@ -440,10 +443,15 @@ class _OrderProgressBarState extends State<OrderProgressBar> {
                                     fontSize: 18,
                                   ),
                                 ),
-                                Text(
-                                  'Your order has been confirmed',
-                                  style: TextStyle(
-                                    fontSize: 16,
+                                Container(
+                                    width: MediaQuery.of(context).size.width*0.64,
+                                  child: Text(
+                                    'Customer order has been confirmed',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
                                 PopupContainer.currentRiderOrderInProgress[
@@ -537,10 +545,15 @@ class _OrderProgressBarState extends State<OrderProgressBar> {
                                     fontSize: 18,
                                   ),
                                 ),
-                                Text(
-                                  'We are preparing your order',
-                                  style: TextStyle(
-                                    fontSize: 16,
+                                Container(
+                                    width: MediaQuery.of(context).size.width*0.64,
+                                  child: Text(
+                                    'Customer order has been processed',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
                                 PopupContainer.currentRiderOrderInProgress[
@@ -611,7 +624,7 @@ class _OrderProgressBarState extends State<OrderProgressBar> {
                                 BlendMode.saturation,
                               ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Image.asset(
                               "images/orderDeliverd.png",
@@ -630,12 +643,17 @@ class _OrderProgressBarState extends State<OrderProgressBar> {
                                     fontSize: 18,
                                   ),
                                 ),
-                                Text(
-                                  'Your order is ready for pickup',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                ),
+                                // Container(
+                                //     width: MediaQuery.of(context).size.width*0.64,
+                                //   child: Text(
+                                //     'Your order is ready for pickup',
+                                //maxLines: 2,     
+                                //overflow: TextOverflow.ellipsis,
+                                //     style: TextStyle(
+                                //       fontSize: 16,
+                                //     ),
+                                //   ),
+                                // ),
                                 (PopupContainer.currentRiderOrderInProgress[
                                                 'orderDetails']['completed'] ==
                                             false &&

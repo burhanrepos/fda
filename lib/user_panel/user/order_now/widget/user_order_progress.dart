@@ -128,10 +128,14 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                                   fontSize: 18,
                                 ),
                               ),
-                              Text(
-                                'We have recieved your order.',
-                                style: TextStyle(
-                                  fontSize: 16,
+                              Container(
+                                width: MediaQuery.of(context).size.width*0.64,
+                                child: Text(
+                                  'We have recieved your order.',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                             ],
@@ -206,10 +210,14 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                                     fontSize: 18,
                                   ),
                                 ),
-                                Text(
-                                  'Your order has been confirmed.',
-                                  style: TextStyle(
-                                    fontSize: 16,
+                                Container(
+                                    width: MediaQuery.of(context).size.width*0.64,
+                                  child: Text(
+                                    'Your order has been confirmed.',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -285,10 +293,14 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                                     fontSize: 18,
                                   ),
                                 ),
-                                Text(
-                                  'We are preparing your order',
-                                  style: TextStyle(
-                                    fontSize: 16,
+                                Container(
+                                    width: MediaQuery.of(context).size.width*0.64,
+                                  child: Text(
+                                    'We are preparing your order',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -360,10 +372,14 @@ class _UserOrderProgressState extends State<UserOrderProgress> {
                                     fontSize: 18,
                                   ),
                                 ),
-                                Text(
-                                  'Your order is ready for pickup',
-                                  style: TextStyle(
-                                    fontSize: 16,
+                                Container(
+                                    width: MediaQuery.of(context).size.width*0.64,
+                                  child: Text(
+                                    'Your order is ready for pickup',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
                                 UserMainScreen.activeOrderDetails[
