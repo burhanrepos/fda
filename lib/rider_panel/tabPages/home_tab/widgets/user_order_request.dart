@@ -10,6 +10,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'dart:ui' as ui;
 import '../../../../global/global.dart';
+import '../../../../widgets/direction_model.dart';
+import '../../../../widgets/direction_repository.dart';
 import '../home_tab.dart';
 
 class UserOrderRequest extends StatefulWidget {
@@ -29,6 +31,7 @@ class UserOrderRequest extends StatefulWidget {
 class _UserOrderRequestState extends State<UserOrderRequest> {
     
 String _address = '';
+late Directions _info;
   displayUserDetails(context, userDetails) {
     return showDialog(
       context: context,
@@ -291,17 +294,40 @@ String _address = '';
         },
       ),
     );
-    RiderHomeTabPage.polyline.add(Polyline(
+    // RiderHomeTabPage.polyline.add(Polyline(
+    //   polylineId: PolylineId("route1"),
+    //   visible: true,
+    //   width: 3,
+    //   color: Colors.blueAccent,
+    //   endCap: Cap.buttCap,
+    //   points: [RiderHomeTabPage.sourceLocation, RiderHomeTabPage.destinationLocation],
+    // ));
+    _fetchPolylinePoints();
+    print('HOME PAGE REFERENCE');
+    Navigator.of(context).pop();
+    // widget.updateState();
+  }
+  _fetchPolylinePoints() async{
+    final directions = await DirectionsRepository().getDirections(origin: RiderHomeTabPage.sourceLocation, destination: RiderHomeTabPage.destinationLocation);
+    // setState(() {
+        print("Get the Directions===========================");
+        print(directions?.polylinePoints.toString());
+      
+      _info = directions as Directions;
+      if(_info.polylinePoints.length!=0){
+        RiderHomeTabPage.polyline.add(Polyline(
       polylineId: PolylineId("route1"),
       visible: true,
       width: 3,
       color: Colors.blueAccent,
       endCap: Cap.buttCap,
-      points: [RiderHomeTabPage.sourceLocation, RiderHomeTabPage.destinationLocation],
+      points:_info.polylinePoints.map((e) => LatLng(e.latitude, e.longitude)).toList(),
     ));
-    print('HOME PAGE REFERENCE');
-    Navigator.of(context).pop();
+        
+      }
     widget.updateState();
+
+    // });
   }
    showDetailOnMakers(title, imageUrl, name, phone, address, asset) {
     showDialog(

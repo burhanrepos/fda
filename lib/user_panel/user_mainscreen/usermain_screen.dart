@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:fda/global/global.dart';
+// import 'package:fda/models/directions.dart';
+import '../../widgets/direction_model.dart';
 import 'package:fda/user_panel/user/order_now/orderNow.dart';
 import 'package:fda/user_panel/user/order_now/widget/user_order_progress.dart';
+import 'package:fda/widgets/direction_repository.dart';
 import 'package:fda/widgets/divider.dart';
 import 'package:fda/widgets/mydrawer.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -488,6 +491,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
   }
 
   String _address = '';
+  late Directions _info;
   @override
   void initState() {
     super.initState();
@@ -599,6 +603,26 @@ class _UserMainScreenState extends State<UserMainScreen> {
         .buffer
         .asUint8List();
   }
+  _fetchPolylinePoints() async{
+    final directions = await DirectionsRepository().getDirections(origin: UserMainScreen.sourceLocation, destination: UserMainScreen.destinationLocation);
+    setState(() {
+        print("Get the Directions===========================");
+        print(directions?.polylinePoints.toString());
+      
+      _info = directions as Directions;
+      if(_info.polylinePoints.length!=0){
+        UserMainScreen.polyline.add(Polyline(
+      polylineId: PolylineId("route1"),
+      visible: true,
+      width: 3,
+      color: Colors.blueAccent,
+      endCap: Cap.buttCap,
+      points:_info.polylinePoints.map((e) => LatLng(e.latitude, e.longitude)).toList(),
+    ));
+        
+      }
+    });
+  }
 
   drawPoliline() async {
     setSourceLocation();
@@ -616,6 +640,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
         userDetails['orderDetails']['longitude']);
     print("Destination =======${UserMainScreen.destinationLocation}");
     print("Source =======${UserMainScreen.sourceLocation}");
+    _fetchPolylinePoints();
     UserMainScreen.markers.add(
       Marker(
         markerId: MarkerId("source"),
@@ -651,17 +676,17 @@ class _UserMainScreenState extends State<UserMainScreen> {
                 'Rider Detail', imageUrl, name, phone, _address, asset);
           }),
     );
-    UserMainScreen.polyline.add(Polyline(
-      polylineId: PolylineId("route1"),
-      visible: true,
-      width: 3,
-      color: Colors.blueAccent,
-      endCap: Cap.buttCap,
-      points: [
-        UserMainScreen.sourceLocation,
-        UserMainScreen.destinationLocation
-      ],
-    ));
+    // UserMainScreen.polyline.add(Polyline(
+    //   polylineId: PolylineId("route1"),
+    //   visible: true,
+    //   width: 3,
+    //   color: Colors.blueAccent,
+    //   endCap: Cap.buttCap,
+    //   points: [
+    //     UserMainScreen.sourceLocation,
+    //     UserMainScreen.destinationLocation
+    //   ],
+    // ));
     print('HOME PAGE REFERENCE');
     setState(() {});
     // Navigator.of(context).pop();
