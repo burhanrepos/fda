@@ -625,7 +625,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
   }
 
   drawPoliline() async {
-    setSourceLocation(UserMainScreen.OrderDetailsOfCurrentUser);
+    setSourceLocation(UserMainScreen.OrderDetailsOfCurrenRider);
     final Uint8List sourceIcon =
         await getBytesFromAsset('images/user-marker.png', 100);
     final Uint8List destinationIcon =
