@@ -513,11 +513,11 @@ class _UserMainScreenState extends State<UserMainScreen> {
     setState(() {});
   }
 
-  setSourceLocation() async {
+  setSourceLocation(userDetails) async {
     DatabaseReference ref = FirebaseDatabase.instance
         .ref()
         .child("activeDrivers")
-        .child(currentFirebaseUser!.uid)
+        .child(userDetails['riderId'])
         .child("l");
     DatabaseEvent driverLocation = await ref.once();
     var location = driverLocation.snapshot.value as List;
@@ -625,7 +625,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
   }
 
   drawPoliline() async {
-    setSourceLocation();
+    setSourceLocation(UserMainScreen.OrderDetailsOfCurrentUser);
     final Uint8List sourceIcon =
         await getBytesFromAsset('images/user-marker.png', 100);
     final Uint8List destinationIcon =
@@ -1063,6 +1063,15 @@ class _UserMainScreenState extends State<UserMainScreen> {
   @override
   void dispose() {
     timer?.cancel();
+    UserMainScreen.OrderDetailsOfCurrenRider =null;
+    UserMainScreen.OrderDetailsOfCurrentUser =null;
+    UserMainScreen.sourceLocation=LatLng(0.0, 0.0);
+    UserMainScreen.destinationLocation=LatLng(0.0, 0.0);
+    UserMainScreen.allActiveOrders?.clear();
+    UserMainScreen.idOfActiveOrderRider='';
+    UserMainScreen.markers.clear();
+    UserMainScreen.polyline.clear();
+    UserMainScreen.activeOrderDetails=null;
     super.dispose();
   }
 }
