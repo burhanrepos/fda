@@ -39,6 +39,7 @@ class _UserRatingState extends State<UserRating> {
   void addEarningOfRider(activeOrderDetails) async {
     String orderDate = activeOrderDetails['orderDetails']['orderDate'];
     String price = activeOrderDetails['orderDetails']['Price'].toString();
+    String deliveryCharges = activeOrderDetails['orderDetails']['deliveryCharges'].toString();
     int orderMonth = int.parse(orderDate.substring(0, 2));
     int orderDateInMonth = int.parse(orderDate.substring(3, 5));
     int orderYear = int.parse(orderDate.substring(6));
@@ -69,7 +70,7 @@ class _UserRatingState extends State<UserRating> {
       for (String key in tempEarningArray.keys) {
         if (int.parse(key) == orderMonth) {
           tempEarningArray[key] =
-              tempEarningArray[key] + (int.parse(price) + 250);
+              tempEarningArray[key] + (int.parse(price) + (deliveryCharges as double));
         }
       }
       var totalEarning = 0;

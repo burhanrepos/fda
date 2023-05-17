@@ -1,5 +1,6 @@
 import 'dart:typed_data';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:fda/rider_panel/tabPages/home_tab/widgets/popup_container.dart';
 import 'package:fda/widgets/constants.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -13,7 +14,6 @@ import '../../../../global/global.dart';
 import '../../../../widgets/direction_model.dart';
 import '../../../../widgets/direction_repository.dart';
 import '../home_tab.dart';
-
 class UserOrderRequest extends StatefulWidget {
 //   const UserOrderRequest({
 //     super.key,
@@ -32,7 +32,16 @@ class _UserOrderRequestState extends State<UserOrderRequest> {
     
 String _address = '';
 late Directions _info;
-  displayUserDetails(context, userDetails) {
+  displayUserDetails(context, userDetails) async {
+    
+    LatLng destination = LatLng(
+        userDetails['orderDetails']['latitude'],
+        userDetails['orderDetails']['longitude']);
+
+    var distanceFare =await calculateDistance(RiderHomeTabPage.sourceLocation,destination) as Map;
+    userDetails['orderDetails']['deliveryCharges']=distanceFare['fare'];
+    userDetails['orderDetails']['distance']=distanceFare['distance'];
+    
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -171,6 +180,28 @@ late Directions _info;
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
+                    'Distance',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  Text(
+                    '${(distanceFare['distance'] as double).round()} km',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
                     'Delivery Charges',
                     style: TextStyle(
                       fontSize: 18,
@@ -179,7 +210,7 @@ late Directions _info;
                     ),
                   ),
                   Text(
-                    '200',
+                    'Rs ${distanceFare['fare']}',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
@@ -329,6 +360,28 @@ late Directions _info;
 
     // });
   }
+  
+    static Future<dynamic> calculateDistance(
+      LatLng origin, LatLng destination) async {
+        String _apiKey = "AIzaSyCmnV9YatIfHq_mihV0nJe6tP0Hf2CJpFc";
+    final url =
+        "https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.latitude},${origin.longitude}&destinations=${destination.latitude},${destination.longitude}&key=$_apiKey";
+
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+    final distanceValue = data["rows"][0]["elements"][0]["distance"]["value"];
+    final distanceInKm = distanceValue / 1000.0;
+    final fare = (distanceInKm * 30).round();
+
+    final distanceFare = {"distance": distanceInKm, "fare": fare};
+    return distanceFare;
+    } else {
+      throw Exception("Failed to calculate distance");
+    }
+  }
+
+  
    showDetailOnMakers(title, imageUrl, name, phone, address, asset) {
     showDialog(
       context: context,
