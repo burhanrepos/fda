@@ -454,8 +454,14 @@ late Directions _info;
   }
 
 
-  addOrderToActiveOrders(userDetails) {
+  addOrderToActiveOrders(userDetails)async {
     userDetails['orderDetails']['accepted'] = true;
+    String orderDate = userDetails['orderDetails']['orderDate'];
+    String liter =
+        userDetails['orderDetails']['Liter'].toString().substring(0, 1);
+    String price = userDetails['orderDetails']['Price'].toString();
+    int orderMonth = int.parse(orderDate.substring(0, 2));
+    int orderYear = int.parse(orderDate.substring(6));
 
     DatabaseReference? userRef = FirebaseDatabase.instance
         .ref()
@@ -480,6 +486,63 @@ late Directions _info;
     DatabaseReference orderRefrence =
         FirebaseDatabase.instance.ref().child("activeOrders");
     orderRefrence.child(currentFirebaseUser!.uid).set(userDetails);
+
+    DatabaseReference? driver = FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(currentFirebaseUser!.uid).child('riderPurchase').child(orderYear.toString());
+    DatabaseEvent driverDetailEvent = await driver.once();
+      print("riderPurchaseDetails ================== ");
+
+    var riderPurchaseDetails = driverDetailEvent.snapshot.value;
+      print("riderPurchaseDetails ================== ${riderPurchaseDetails}");
+
+    Map   tempEarningArray = {
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0
+    };
+    if (riderPurchaseDetails == null) {
+      print("Rider Purchase SHare if================== ");
+        
+      for (String key in tempEarningArray.keys) {
+        if (int.parse(key) == orderMonth) {
+          tempEarningArray[key] = tempEarningArray[key] + (int.parse(price) - int.parse(liter) * 10);
+        }
+      }
+      print(tempEarningArray);
+      driver
+          .set(tempEarningArray);
+    } else {
+      print("Rider Purchase SHare ELse=================");
+      var companyShareList = [...((riderPurchaseDetails) as List<Object?>)];
+      companyShareList.removeAt(0);
+      tempEarningArray.clear(); 
+      print(companyShareList);
+      for (var index = 0; index < companyShareList.length; index++) {
+        tempEarningArray[index + 1] = companyShareList[index];
+        
+        if (index + 1 == orderMonth) {
+          tempEarningArray[index + 1] =
+              int.parse(companyShareList[index].toString()) +
+                (int.parse(price) - int.parse(liter) * 10);
+
+        }
+      }
+      print(tempEarningArray);
+
+      driver
+          .set(tempEarningArray);
+    }
   }
 
   removeOrderFromUser(userDetails) {

@@ -20,10 +20,11 @@ class _UserRatingState extends State<UserRating> {
   DatabaseReference orderRefrence =
       FirebaseDatabase.instance.ref().child("activeOrders");
   orderCompleted(userDetails) {
-    userDetails['orderDetails']['received'] = true;  
+    userDetails['orderDetails']['received'] = true;
     userDetails['orderDetails']['riderNotification'] = true;
     userDetails['orderDetails']['notificationTitle'] = "Active Order status";
-    userDetails['orderDetails']['notificationDescription'] = "You have completed your order";
+    userDetails['orderDetails']['notificationDescription'] =
+        "You have completed your order";
     orderRefrence.child(userDetails['riderId']).set(userDetails);
     dispose();
     widget.updateState();
@@ -39,7 +40,10 @@ class _UserRatingState extends State<UserRating> {
   void addEarningOfRider(activeOrderDetails) async {
     String orderDate = activeOrderDetails['orderDetails']['orderDate'];
     String price = activeOrderDetails['orderDetails']['Price'].toString();
-    String deliveryCharges = activeOrderDetails['orderDetails']['deliveryCharges'].toString();
+    String liter =
+        activeOrderDetails['orderDetails']['Liter'].toString().substring(0, 1);
+    String deliveryCharges =
+        activeOrderDetails['orderDetails']['deliveryCharges'].toString();
     int orderMonth = int.parse(orderDate.substring(0, 2));
     int orderDateInMonth = int.parse(orderDate.substring(3, 5));
     int orderYear = int.parse(orderDate.substring(6));
@@ -65,12 +69,16 @@ class _UserRatingState extends State<UserRating> {
     // Get the data once
     DatabaseEvent yearlyEarning =
         await ref.child("yearlyEarning").child(orderYear.toString()).once();
+    DatabaseEvent companyShare =
+        await ref.child("companyShare").child(orderYear.toString()).once();
+    var companyShareDetails = companyShare.snapshot.value;
+
     var earningDetails = yearlyEarning.snapshot.value;
     if (earningDetails == null) {
       for (String key in tempEarningArray.keys) {
         if (int.parse(key) == orderMonth) {
           tempEarningArray[key] =
-              tempEarningArray[key] + (int.parse(price) + (deliveryCharges as double));
+              tempEarningArray[key] + (deliveryCharges as double);
         }
       }
       var totalEarning = 0;
@@ -91,7 +99,7 @@ class _UserRatingState extends State<UserRating> {
         if (index + 1 == orderMonth) {
           tempEarningArray[index + 1] =
               int.parse(earningList[index].toString()) +
-                  (int.parse(price) + 250);
+                  int.parse(deliveryCharges);
         }
       }
       var totalEarning = 0;
@@ -103,6 +111,52 @@ class _UserRatingState extends State<UserRating> {
           .child(orderYear.toString())
           .set(tempEarningArray);
       ref.child("totalEarning").set(totalEarning);
+    }
+    tempEarningArray = {
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0
+    };
+    if (companyShareDetails == null) {
+      print("COmparny SHare IF==================");
+      for (String key in tempEarningArray.keys) {
+        if (int.parse(key) == orderMonth) {
+          tempEarningArray[key] = tempEarningArray[key] + int.parse(liter) * 10;
+        }
+      }
+      print(tempEarningArray);
+      ref
+          .child("companyShare")
+          .child(orderYear.toString())
+          .set(tempEarningArray);
+    } else {
+      print("COmparny SHare ELse==================");
+      var companyShareList = [...((companyShareDetails) as List<Object?>)];
+      companyShareList.removeAt(0);
+      tempEarningArray.clear();
+      for (var index = 0; index < companyShareList.length; index++) {
+        tempEarningArray[index + 1] = companyShareList[index];
+        if (index + 1 == orderMonth) {
+          tempEarningArray[index + 1] =
+              int.parse(companyShareList[index].toString()) +
+                  (int.parse(liter) * 10);
+        }
+      }
+      print(tempEarningArray);
+
+      ref
+          .child("companyShare")
+          .child(orderYear.toString())
+          .set(tempEarningArray);
     }
   }
 
@@ -198,7 +252,10 @@ class _UserRatingState extends State<UserRating> {
           child: Text(
             'Submit',
             style: TextStyle(
-                color: _rating == 0 ? Colors.grey : Constants.applicationThemeColor, fontSize: 16),
+                color: _rating == 0
+                    ? Colors.grey
+                    : Constants.applicationThemeColor,
+                fontSize: 16),
           ),
           onPressed: () {
             color:

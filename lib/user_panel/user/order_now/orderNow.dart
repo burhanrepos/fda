@@ -34,20 +34,43 @@ Position? currentPosition;
 List dropDownValues = [
     {
         "fuel":"Petrol",
-        "price":250,
+        "price":0,
         "color":Colors.red
     },
     {
         "fuel":"Hi-Octane",
-        "price":350,
+        "price":0,
         "color":Constants.applicationThemeColor
     },
     {
         "fuel":"Diesel",
-        "price":285,
+        "price":0,
         "color":Colors.purpleAccent
     }
 ];
+
+getFuelPrices() async {
+    DatabaseReference ref = FirebaseDatabase.instance
+        .ref()
+        .child("fuelPrices");
+    DatabaseEvent fuelPriceEvent = await ref.once();
+    var fuelPrice = fuelPriceEvent.snapshot.value as Map;
+    for (var category in fuelPrice.keys) {
+        if (category=='petrol') {
+        dropDownValues[0]['price']= fuelPrice[category].toString();
+        }
+        if(category == 'diesel'){
+        dropDownValues[1]['price']= fuelPrice[category].toString();
+            
+        }
+        if(category == 'hiOctane'){
+        dropDownValues[2]['price']= fuelPrice[category].toString();
+        }
+      }
+      setState(() {
+        
+      });
+  }
 
   User? get firebaseUser => currentFirebaseUser;
 //late MultiValueDropDownController _cntMulti;
@@ -99,9 +122,11 @@ SaveOrder(){
     for(int index=0;index<dropDownValues.length;index++){
         if(_cnt.dropDownValue?.name.toString()==dropDownValues[index]['fuel']){
             int numberOfLiters = int.parse((_secondCnt.dropDownValue?.name.toString().substring(0,1)).toString());
-            price = dropDownValues[index]['price'];
-            price=price*numberOfLiters;
+            price = int.parse(dropDownValues[index]['price']);
+            int companyShare = 10*numberOfLiters;
+            price=(price*numberOfLiters + companyShare);
             print("Price =========${price}");
+            print("Number of liter==============${companyShare}");
         }
     }
     Map userOrder={
@@ -139,6 +164,7 @@ void initState() {
   _secondCnt= SingleValueDropDownController();
 //  _cntMulti = MultiValueDropDownController();
   super.initState();
+  getFuelPrices();
 }
 
 @override

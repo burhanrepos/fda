@@ -31,7 +31,7 @@ class _UserOrderPlacedState extends State<UserOrderPlaced> {
   Widget build(BuildContext context) {
     return Scrollbar(
       child: Container(
-        height: 250.0,
+      //   height: 250.0,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -71,6 +71,9 @@ class _UserOrderPlacedState extends State<UserOrderPlaced> {
                   print(
                       'User Cancel ORder${usersDetails}');
                 }
+                setState(() {
+                  
+                });
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -87,23 +90,23 @@ class _UserOrderPlacedState extends State<UserOrderPlaced> {
               ),
             ):Container(),
             Container(
-  padding: EdgeInsets.all(10),
-//   decoration: BoxDecoration(
-//     color: Colors.white,
-//     borderRadius: BorderRadius.circular(10),
-//     boxShadow: [
-//       BoxShadow(
-//         color: Colors.grey.withOpacity(0.5),
-//         spreadRadius: 2,
-//         blurRadius: 5,
-//         offset: Offset(0, 3),
-//       ),
-//     ],
-//   ),
-  child: Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
+      padding: EdgeInsets.all(10),
+    //   decoration: BoxDecoration(
+    //     color: Colors.white,
+    //     borderRadius: BorderRadius.circular(10),
+    //     boxShadow: [
+    //       BoxShadow(
+    //         color: Colors.grey.withOpacity(0.5),
+    //         spreadRadius: 2,
+    //         blurRadius: 5,
+    //         offset: Offset(0, 3),
+    //       ),
+    //     ],
+    //   ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
       Icon(
         Icons.check_circle,
         color: Colors.green,
@@ -127,12 +130,12 @@ class _UserOrderPlacedState extends State<UserOrderPlaced> {
         ),
       ),
       SizedBox(height: 20),
-    //   CircularProgressIndicator(
-    //     valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-    //   ),
-    ],
-  ),
-)
+        //   CircularProgressIndicator(
+        //     valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+        //   ),
+        ],
+      ),
+    )
             // Expanded(
             //   child: ListView(
             //     padding: EdgeInsets.zero,
